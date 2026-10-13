@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edinsured &bull; Regulations of Insurance Business (IC-14) Compliance Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            base: '#0a0a13',
+                            sidebar: '#100d1c',
+                            card: '#1a1626',
+                            border: '#28213d',
+                            violet: '#a78bfa',
+                            accent: '#818cf8',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a13;
+            color: #cbd5e1;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0a0a13; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #28213d; border-radius: 4px; }
+        .hud-card {
+            background: rgba(26, 22, 38, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid #28213d;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+        }
+        .hud-card:hover { border-color: #7c3aed; }
+        .unit-nav-btn.active {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: #ffffff;
+            border-color: #a78bfa;
+            box-shadow: 0 0 15px -3px rgba(167, 139, 250, 0.3);
+        }
+        .part-tab.active { background: #7c3aed; color: #ffffff; border-color: #a78bfa; }
+    </style>
+</head>
+<body class="custom-scrollbar overflow-x-hidden min-h-screen flex flex-col">
+
+    <!-- Top Header -->
+    <header class="border-b border-gray-800/80 bg-[#100d1c]/90 backdrop-blur-md sticky top-0 z-50 px-6 py-3 flex items-center justify-between shadow-xl">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-500 to-indigo-600 flex items-center justify-center font-black text-slate-900 text-sm shadow-md shadow-violet-500/20">
+                RC
+            </div>
+            <div>
+                <h1 class="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                    Edinsured Regulations of Insurance Business Compliance Lab
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 border border-violet-500/20 font-mono">v1.0 Build Day 1</span>
+                </h1>
+                <p class="text-[11px] text-gray-400">IC-14 Syllabus &bull; Original explanations &amp; questions, statutory sequence only</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4 text-xs font-mono">
+            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-gray-800">
+                <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
+                <span id="active-track-label" class="text-gray-300">Unit 1 Active</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Compliance HUD -->
+    <section class="bg-[#0d0b17] border-b border-gray-800/60 px-6 py-2.5">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-xs font-mono">
+            <div class="hud-card p-2.5 rounded-lg">
+                <span class="text-gray-400 text-[10px] block uppercase tracking-wider">Compliance Score</span>
+                <span id="hud-compliance" class="text-white font-bold text-sm">0</span>
+            </div>
+            <div class="hud-card p-2.5 rounded-lg">
+                <span class="text-gray-400 text-[10px] block uppercase tracking-wider">Risk Flags</span>
+                <span id="hud-risk" class="text-rose-400 font-bold text-sm">0</span>
+            </div>
+            <div class="hud-card p-2.5 rounded-lg">
+                <span class="text-gray-400 text-[10px] block uppercase tracking-wider">License Health</span>
+                <span id="hud-license" class="text-emerald-400 font-bold text-sm">100%</span>
+            </div>
+            <div class="hud-card p-2.5 rounded-lg">
+                <span class="text-gray-400 text-[10px] block uppercase tracking-wider">Disclosures Filed</span>
+                <span id="hud-disclosures" class="text-indigo-400 font-bold text-sm">0</span>
+            </div>
+            <div class="hud-card p-2.5 rounded-lg">
+                <span class="text-gray-400 text-[10px] block uppercase tracking-wider">Grievance Backlog</span>
+                <span id="hud-grievance" class="text-amber-400 font-bold text-sm">0</span>
+            </div>
+            <div class="hud-card p-2.5 rounded-lg">
+                <span class="text-gray-400 text-[10px] block uppercase tracking-wider">Diagnostic Stage</span>
+                <span id="hud-stage" class="text-violet-300 font-bold text-sm">0 / 0</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-[#100d1c] border-r border-gray-800 p-3.5 flex flex-col gap-4 shrink-0 overflow-y-auto custom-scrollbar">
+            <div>
+                <button onclick="switchToMilestone()" id="nav-milestone" class="w-full text-left px-3 py-2.5 rounded-lg text-xs border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-all flex items-center justify-between">
+                    <span class="text-amber-300 font-bold flex items-center gap-1.5">&#127942; Full Syllabus Mock &amp; Revision</span>
+                    <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-amber-400 font-mono">Milestone 1</span>
+                </button>
+            </div>
+            <div>
+                <div class="text-[10px] font-bold uppercase tracking-wider text-violet-400 px-2 mb-2">Track A : Foundations of Insurance Law</div>
+                <div class="space-y-1.5">
+                    <button onclick="switchUnit('unit1')" id="nav-unit1" class="unit-nav-btn active w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-white transition-all flex items-center justify-between">
+                        <span>Evolution of Insurance Law &amp; Act 1938</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-violet-300 font-mono">Unit 1</span>
+                    </button>
+                    <button onclick="switchUnit('unit2')" id="nav-unit2" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>IRDA(I): Functions &amp; Councils</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 2</span>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-400 px-2 mb-2">Track B : Licensing &amp; Market Conduct</div>
+                <div class="space-y-1.5">
+                    <button onclick="switchUnit('unit3')" id="nav-unit3" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>Licensing Functions of IRDAI</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 3</span>
+                    </button>
+                    <button onclick="switchUnit('unit4')" id="nav-unit4" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>Conduct of Business Regulations</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 4</span>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 px-2 mb-2">Track C : Policyholder Protection</div>
+                <div class="space-y-1.5">
+                    <button onclick="switchUnit('unit5')" id="nav-unit5" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>Assignment, Nomination &amp; Transfer</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 5</span>
+                    </button>
+                    <button onclick="switchUnit('unit6')" id="nav-unit6" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>Protection of Policyholders' Interests</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 6</span>
+                    </button>
+                    <button onclick="switchUnit('unit7')" id="nav-unit7" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>Dispute Resolution Mechanism</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 7</span>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <div class="text-[10px] font-bold uppercase tracking-wider text-amber-400 px-2 mb-2">Track D : Financial Regulation &amp; Global View</div>
+                <div class="space-y-1.5">
+                    <button onclick="switchUnit('unit8')" id="nav-unit8" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>Solvency Margin &amp; Investment Regulation</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 8</span>
+                    </button>
+                    <button onclick="switchUnit('unit9')" id="nav-unit9" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>International Regulatory Trends</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 9</span>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <div class="text-[10px] font-bold uppercase tracking-wider text-rose-400 px-2 mb-2">Track E : Annexures</div>
+                <div class="space-y-1.5">
+                    <button onclick="switchUnit('unit10')" id="nav-unit10" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>Right to Information Act, 2005</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 10</span>
+                    </button>
+                    <button onclick="switchUnit('unit11')" id="nav-unit11" class="unit-nav-btn w-full text-left px-3 py-2 rounded-lg text-xs border border-transparent text-gray-300 hover:bg-slate-800/60 transition-all flex items-center justify-between">
+                        <span>Grievance Redressal System</span>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-gray-500 font-mono">Unit 11</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-auto hud-card p-3 rounded-lg border border-gray-800 space-y-2">
+                <span class="text-[10px] uppercase font-bold text-gray-400 font-mono block">Compliance Health Check</span>
+                <div class="text-xs font-mono flex justify-between">
+                    <span class="text-gray-400">Compliance Score:</span>
+                    <span id="stat-compliance" class="text-violet-400 font-bold">0</span>
+                </div>
+                <div class="text-xs font-mono flex justify-between">
+                    <span class="text-gray-400">Net Regulatory Risk:</span>
+                    <span id="stat-risk" class="text-rose-400 font-bold">0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+            <div id="unit-header-row" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800/80 pb-3">
+                <div>
+                    <h2 id="current-unit-heading" class="text-lg font-bold text-white tracking-wide">Unit 1</h2>
+                    <p id="current-unit-subheading" class="text-xs text-gray-400 mt-0.5"></p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="switchPartView('bites')" id="tab-bites" class="part-tab active px-3.5 py-1.5 rounded-lg text-xs font-medium border border-transparent transition-all">
+                        1. Concept Sheets (Micro-Bites)
+                    </button>
+                    <button onclick="switchPartView('sandbox')" id="tab-sandbox" class="part-tab px-3.5 py-1.5 rounded-lg text-xs font-medium border border-transparent text-gray-300 hover:bg-slate-800 transition-all">
+                        2. Compliance Desk Sandbox
+                    </button>
+                    <button onclick="switchPartView('exam')" id="tab-exam" class="part-tab px-3.5 py-1.5 rounded-lg text-xs font-medium border border-transparent text-gray-300 hover:bg-slate-800 transition-all">
+                        3. Diagnostic Exam (10 MCQs)
+                    </button>
+                </div>
+            </div>
+
+            <section id="sec-bites" class="space-y-4">
+                <div id="bites-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs"></div>
+            </section>
+
+            <section id="sec-sandbox" class="hidden space-y-6">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <span id="sb-stage-title" class="text-xs font-mono text-violet-400 uppercase font-bold">Compliance Scenario &bull; Stage 1</span>
+                    <button onclick="resetSandboxCurrentUnit()" class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-gray-300 font-mono border border-gray-700">
+                        Reset Stage
+                    </button>
+                </div>
+                <div class="hud-card p-6 rounded-xl space-y-5">
+                    <div class="bg-[#0d0b17] p-4 rounded-lg border border-gray-800/80">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-violet-400 block mb-1">Regulatory Scenario &bull; Apex Shield Insurance Co.</span>
+                        <p id="sb-scenario-text" class="text-sm text-gray-200 leading-relaxed"></p>
+                    </div>
+                    <div>
+                        <h3 id="sb-question-text" class="text-xs font-semibold text-white mb-3"></h3>
+                        <div id="sb-options-container" class="space-y-2.5"></div>
+                    </div>
+                    <div id="sb-feedback-panel" class="hidden p-4 rounded-lg border text-xs font-mono leading-relaxed space-y-1"></div>
+                    <div id="sb-action-container" class="hidden flex justify-end pt-2">
+                        <button onclick="advanceSandboxStage()" class="px-5 py-2 bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold rounded-lg transition-all shadow-md shadow-violet-600/30">
+                            Proceed to Next Scenario &rarr;
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-exam" class="hidden space-y-6">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <span class="text-xs font-mono text-violet-400 uppercase font-bold">Diagnostic Questions &bull; Weakness Identification Engine</span>
+                    <div class="text-xs font-mono text-gray-400">Score: <span id="exam-score-display" class="text-emerald-400 font-bold">0</span> / <span id="exam-total-display">10</span></div>
+                </div>
+                <div id="exam-questions-container" class="space-y-4"></div>
+                <div class="hud-card p-5 rounded-xl space-y-3">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                        <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-rose-500"></span> Diagnostic Misconceptions Logged
+                        </span>
+                        <span id="misc-counter-badge" class="text-[11px] font-mono text-gray-400">0 Flags</span>
+                    </div>
+                    <div id="misc-list-container" class="space-y-1.5 text-xs">
+                        <p class="text-gray-500 italic text-[11px]">No misconceptions logged. Select answers carefully.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Milestone 1: Full Syllabus Mock & Revision -->
+            <section id="sec-milestone" class="hidden space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800/80 pb-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-white tracking-wide flex items-center gap-2">&#127942; Milestone 1: Full Syllabus Review</h2>
+                        <p class="text-xs text-gray-400 mt-0.5">Cross-chapter mock exam and a running revision dashboard, drawing on all 11 units</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="switchMilestoneView('mock')" id="mtab-mock" class="part-tab active px-3.5 py-1.5 rounded-lg text-xs font-medium border border-transparent transition-all">
+                            Full Mock Exam
+                        </button>
+                        <button onclick="switchMilestoneView('dashboard')" id="mtab-dashboard" class="part-tab px-3.5 py-1.5 rounded-lg text-xs font-medium border border-transparent text-gray-300 hover:bg-slate-800 transition-all">
+                            Revision Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mock Exam Sub-Section -->
+                <div id="msec-mock" class="space-y-6">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                        <span class="text-xs font-mono text-amber-400 uppercase font-bold">33-Question Full Syllabus Mock &bull; 3 Questions per Unit (Units 1&ndash;11)</span>
+                        <div class="flex items-center gap-3">
+                            <div class="text-xs font-mono text-gray-400">Score: <span id="mock-score-display" class="text-emerald-400 font-bold">0</span> / <span id="mock-total-display">33</span></div>
+                            <button onclick="generateMockExam()" class="text-xs px-2.5 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white font-mono font-bold">
+                                New Mock (Reshuffle)
+                            </button>
+                        </div>
+                    </div>
+                    <div id="mock-questions-container" class="space-y-4"></div>
+                    <div id="mock-results-panel" class="hidden hud-card p-5 rounded-xl space-y-3 border-t-2 border-amber-500/80"></div>
+                </div>
+
+                <!-- Revision Dashboard Sub-Section -->
+                <div id="msec-dashboard" class="hidden space-y-6">
+                    <div class="hud-card p-5 rounded-xl space-y-4">
+                        <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-amber-400"></span> Per-Unit Practice Accuracy (This Session)
+                        </span>
+                        <div id="dashboard-unit-table" class="space-y-1.5 text-xs font-mono"></div>
+                        <p class="text-[10px] text-gray-500 italic">Tallies every diagnostic exam and mock-exam question answered this session, across all 11 units. Resets on page reload — nothing is saved to disk.</p>
+                    </div>
+                    <div class="hud-card p-5 rounded-xl space-y-3">
+                        <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                            <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-rose-500"></span> Top Misconceptions Across the Full Syllabus
+                            </span>
+                            <span id="dashboard-misc-count" class="text-[11px] font-mono text-gray-400">0 Unique Flags</span>
+                        </div>
+                        <div id="dashboard-misc-list" class="space-y-1.5 text-xs"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Global session-wide tracking for Milestone 1 (in-memory only, resets on reload)
+        const globalUnitStats = {};
+        for (let i = 1; i <= 11; i++) { globalUnitStats["unit" + i] = { attempted: 0, correct: 0 }; }
+        const globalMiscLog = {};
+        let mockQuestions = [];
+        let mockScore = 0;
+        let activeMilestoneTab = "mock";
+
+        const unitTitles = {
+            unit1: "Unit 1: Evolution of Insurance Law", unit2: "Unit 2: IRDA(I) Formation & Councils",
+            unit3: "Unit 3: Licensing & Registration", unit4: "Unit 4: Conduct of Business",
+            unit5: "Unit 5: Assignment, Nomination & Transfer", unit6: "Unit 6: Protection of Policyholders' Interests",
+            unit7: "Unit 7: Dispute Resolution Mechanism", unit8: "Unit 8: Solvency Margin & Investments",
+            unit9: "Unit 9: International Regulatory Trends", unit10: "Unit 10: Right to Information Act",
+            unit11: "Unit 11: Grievance Redressal System"
+        };
+
+        const unitDatabase = {};
+
+        unitDatabase["unit1"] = {
+            id: "unit1",
+            title: "Unit 1: Evolution of Insurance Law in India & the Insurance Act, 1938",
+            subheading: "Constitutional basis, the three eras of insurance regulation, nationalisation, liberalisation, and the current FDI ceiling",
+            bites: [
+                { tag: "Concept 01", title: "Insurance in the Constitutional Scheme", desc: "Insurance sits in the Union List of the Constitution of India, so only Parliament — not any State legislature — can make law on it, giving the country one uniform insurance statute.", rule: "Rule: State legislatures have no competence to enact competing insurance laws." },
+                { tag: "Concept 02", title: "Three Eras of Indian Insurance Regulation", desc: "Regulation has moved through three broad phases: an early, loosely-regulated colonial market; a nationalised, single-player era from the mid-1950s; and a liberalised, regulator-led era from 2000 onward.", rule: "Rule: Each era is anchored to a landmark statute — the Act of 1912, the Nationalisation Acts, and the IRDA Act, 2000." },
+                { tag: "Concept 03", title: "The Insurance Act, 1938 — The Umbrella Statute", desc: "The Insurance Act, 1938 remains the principal law for both life and general insurers in India. Rather than being replaced, it has been repeatedly amended — notably in 1999, 2015 and 2021.", rule: "Rule: Later statutes (the IRDA Act, Amendment Acts) build on the 1938 Act; they do not repeal it." },
+                { tag: "Concept 04", title: "Nationalisation: LIC and GIC", desc: "Life insurance was nationalised in 1956, creating the Life Insurance Corporation (LIC). General insurance followed in 1973 under the General Insurance Business (Nationalisation) Act, 1972, creating GIC along with four public-sector subsidiaries.", rule: "Rule: Since the subsidiaries were demerged from GIC in the early 2000s, GIC's role has been chiefly that of a reinsurer." },
+                { tag: "Concept 05", title: "Liberalisation & the IRDA Act, 2000", desc: "Following the 1994 Malhotra Committee report, the IRDA Act, 2000 reopened the sector to private and foreign capital and set up the Insurance Regulatory and Development Authority as an independent regulator.", rule: "Rule: No private insurer may transact business in India without a Certificate of Registration from IRDAI." },
+                { tag: "Concept 06", title: "FDI in Insurance — A Moving Ceiling", desc: "The foreign investment cap for Indian insurers has been raised in stages: 26% (2000), 49% (2015), 74% (2021), and a 100% ceiling notified in 2025 for insurers that reinvest their entire premium income in India.", rule: "Rule: IRDAI continues to monitor and verify every foreign investment inflow, whatever the prevailing cap." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "Apex Shield Insurance Co. has just been incorporated as a general insurer and is preparing to apply for its Certificate of Registration before writing any policies.",
+                        question: "Under the current legal framework, which authority must grant Apex Shield its Certificate of Registration before it can transact insurance business?",
+                        options: [
+                            { id: "A", text: "The Insurance Regulatory and Development Authority of India (IRDAI), under the Insurance Act, 1938 as amended", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — company incorporation (Ministry of Corporate Affairs) and insurance registration (IRDAI) are two separate approvals." },
+                            { id: "B", text: "The Ministry of Corporate Affairs, since Apex Shield is already a registered company", isCorrect: false, misc: "MIS_MCA_LICENSE", feedback: "Incorrect — incorporating a company does not authorise it to transact insurance business." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "A foreign reinsurance group offers to invest in 90% of Apex Shield's equity capital, on condition that Apex Shield reinvests its entire premium income within India.",
+                        question: "Is this level of foreign investment permissible under the prevailing FDI framework for Indian insurers?",
+                        options: [
+                            { id: "A", text: "Yes — insurers that reinvest their entire premium income in India can now be up to 100% foreign-owned, so a 90% stake is permitted", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — the ceiling was raised in stages and now stands at 100% for insurers meeting this condition." },
+                            { id: "B", text: "No — foreign investment in Indian insurers is still capped at 26%", isCorrect: false, misc: "MIS_STALE_FDI_CAP", feedback: "Incorrect — 26% was the original 2000 ceiling; it has since been raised in stages to 100%." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "Apex Shield's compliance officer is documenting which statute continues to govern the company's core insurance operations.",
+                        question: "Which statute remains the principal law under which Apex Shield's insurance business (as distinct from its company-law obligations) is regulated?",
+                        options: [
+                            { id: "A", text: "The Insurance Act, 1938, as amended by subsequent Amendment Acts", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — the 1938 Act remains in force, amended rather than repealed." },
+                            { id: "B", text: "The IRDA Act, 2000 alone, since it fully replaced the 1938 Act", isCorrect: false, misc: "MIS_REPEAL_MYTH", feedback: "Incorrect — the IRDA Act, 2000 created the regulator; it amended and supplemented the 1938 Act rather than repealing it." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u1_q1", question: "1. Insurance is placed under which list of the Indian Constitution, giving Parliament exclusive power to legislate on it?", options: [{ id: "A", text: "The Union List", isCorrect: true }, { id: "B", text: "The State List", isCorrect: false, misc: "MIS_STATE_LIST" }, { id: "C", text: "The Concurrent List", isCorrect: false, misc: "MIS_CONCURRENT" }, { id: "D", text: "It is not mentioned in any list", isCorrect: false, misc: "MIS_NOLIST" }], explanation: "Insurance falls in the Union List, so only Parliament can legislate on it, keeping the law uniform across India." },
+                { id: "u1_q2", question: "2. The first statutory measure to regulate life insurance business in India was enacted in:", options: [{ id: "A", text: "1912", isCorrect: true }, { id: "B", text: "1938", isCorrect: false, misc: "MIS_1938_FIRST" }, { id: "C", text: "1956", isCorrect: false, misc: "MIS_1956" }, { id: "D", text: "2000", isCorrect: false, misc: "MIS_2000" }], explanation: "The Indian Life Assurance Companies Act, 1912 was the first statutory measure regulating life insurance in India." },
+                { id: "u1_q3", question: "3. General (non-life) insurance business was first brought under comprehensive statutory regulation through:", options: [{ id: "A", text: "The Insurance Act, 1938", isCorrect: true }, { id: "B", text: "The Act of 1912", isCorrect: false, misc: "MIS_1912_GENERAL" }, { id: "C", text: "The IRDA Act, 2000", isCorrect: false, misc: "MIS_IRDA_FIRST" }, { id: "D", text: "GIBNA, 1972", isCorrect: false, misc: "MIS_GIBNA_FIRST" }], explanation: "The 1912 Act was chiefly aimed at life insurance; general insurance came under statutory control only with the Insurance Act, 1938." },
+                { id: "u1_q4", question: "4. Life insurance business in India was nationalised in:", options: [{ id: "A", text: "1956, through the LIC Act", isCorrect: true }, { id: "B", text: "1972, through GIBNA", isCorrect: false, misc: "MIS_YEAR_SWAP" }, { id: "C", text: "1938, through the Insurance Act", isCorrect: false, misc: "MIS_1938_NAT" }, { id: "D", text: "2000, through the IRDA Act", isCorrect: false, misc: "MIS_2000_NAT" }], explanation: "Life insurance was nationalised in 1956 via the LIC Act, forming the Life Insurance Corporation." },
+                { id: "u1_q5", question: "5. The General Insurance Business (Nationalisation) Act, 1972 led to the formation of GIC as a holding company along with how many public-sector subsidiaries?", options: [{ id: "A", text: "Four", isCorrect: true }, { id: "B", text: "Two", isCorrect: false, misc: "MIS_TWO_SUBS" }, { id: "C", text: "Eight", isCorrect: false, misc: "MIS_EIGHT_SUBS" }, { id: "D", text: "Twelve", isCorrect: false, misc: "MIS_TWELVE_SUBS" }], explanation: "GIC was formed with four subsidiaries: National Insurance, New India Assurance, Oriental Insurance, and United India Insurance." },
+                { id: "u1_q6", question: "6. The committee whose recommendations paved the way for opening up the insurance sector to private participation was headed by:", options: [{ id: "A", text: "R. N. Malhotra", isCorrect: true }, { id: "B", text: "Y. V. Reddy", isCorrect: false, misc: "MIS_REDDY" }, { id: "C", text: "Bimal Jalan", isCorrect: false, misc: "MIS_JALAN" }, { id: "D", text: "Raghuram Rajan", isCorrect: false, misc: "MIS_RAJAN" }], explanation: "The Malhotra Committee (1994) recommended liberalising the insurance sector, leading to the IRDA Act, 2000." },
+                { id: "u1_q7", question: "7. The statute that created the insurance regulator and reopened the sector to private and foreign players is:", options: [{ id: "A", text: "The IRDA Act, 2000", isCorrect: true }, { id: "B", text: "The Insurance Act, 1938", isCorrect: false, misc: "MIS_1938_REG" }, { id: "C", text: "GIBNA, 1972", isCorrect: false, misc: "MIS_GIBNA_REG" }, { id: "D", text: "The Companies Act, 2013", isCorrect: false, misc: "MIS_COMPANIES_REG" }], explanation: "The IRDA Act, 2000 established IRDA(I) and liberalised entry into the sector." },
+                { id: "u1_q8", question: "8. Following the position notified in 2025, the FDI ceiling for an Indian insurer that reinvests its entire premium income in India is:", options: [{ id: "A", text: "100%", isCorrect: true }, { id: "B", text: "74%", isCorrect: false, misc: "MIS_74_CURRENT" }, { id: "C", text: "49%", isCorrect: false, misc: "MIS_49_CURRENT" }, { id: "D", text: "26%", isCorrect: false, misc: "MIS_26_CURRENT" }], explanation: "The FDI cap was raised to 100% (subject to conditions) for insurers investing their entire premium in India, following the 2025 Budget announcement and the subsequent notification." },
+                { id: "u1_q9", question: "9. The two constituent councils of the Insurance Association of India are the Life Insurance Council and the:", options: [{ id: "A", text: "General Insurance Council", isCorrect: true }, { id: "B", text: "Reinsurance Council", isCorrect: false, misc: "MIS_REINS_COUNCIL" }, { id: "C", text: "Health Insurance Council", isCorrect: false, misc: "MIS_HEALTH_COUNCIL" }, { id: "D", text: "Agency Council", isCorrect: false, misc: "MIS_AGENCY_COUNCIL" }], explanation: "The Insurance Association of India operates through the Life Insurance Council and the General Insurance Council." },
+                { id: "u1_q10", question: "10. Since the early 2000s demerger of its subsidiaries, GIC's role in the Indian insurance market has primarily been that of a:", options: [{ id: "A", text: "Reinsurer (with some aviation insurance business)", isCorrect: true }, { id: "B", text: "Direct motor insurance retailer", isCorrect: false, misc: "MIS_GIC_RETAIL" }, { id: "C", text: "Life insurance underwriter", isCorrect: false, misc: "MIS_GIC_LIFE" }, { id: "D", text: "Banking regulator", isCorrect: false, misc: "MIS_GIC_BANK" }], explanation: "After its four subsidiaries were demerged, GIC's principal role has been that of a national reinsurer." }
+            ]
+        };
+
+        unitDatabase["unit2"] = {
+            id: "unit2",
+            title: "Unit 2: IRDA(I) — Formation, Functions & Insurance Councils",
+            subheading: "Legal basis and composition of the Authority, its Section 14 duties, tenure rules, and how the Insurance Councils' role has shifted over time",
+            bites: [
+                { tag: "Concept 01", title: "IRDA(I) — Origins & Legal Basis", desc: "The Insurance Regulatory and Development Authority (IRDA, now commonly IRDAI) is a statutory, autonomous body constituted under the IRDA Act, 1999, functioning under the Ministry of Finance and headquartered in Hyderabad.", rule: "Rule: IRDAI's mandate is to regulate, promote and ensure orderly growth of the insurance and reinsurance industry." },
+                { tag: "Concept 02", title: "Composition of the Authority (Section 4)", desc: "Section 4 caps the Authority at ten members: one Chairperson, up to five whole-time Members, and up to four part-time Members, drawn from people with proven ability in insurance, actuarial science, finance, law, economics or administration.", rule: "Rule: All Members, whole-time or part-time, are appointed by the Central Government." },
+                { tag: "Concept 03", title: "Tenure & Age Limits (Section 5)", desc: "The Chairperson serves a term (commonly notified as five years) or until reaching 65 years of age, whichever comes first; whole-time Members serve on similar fixed terms subject to a lower upper age limit of 62.", rule: "Rule: Fixed, age-capped tenures are meant to keep the regulator's leadership independent and periodically refreshed." },
+                { tag: "Concept 04", title: "Statutory Duties, Powers & Functions (Section 14)", desc: "Section 14 gives IRDAI a broad mandate: licensing insurers and intermediaries, protecting policyholders' interests, prescribing agent/intermediary qualifications, regulating investment of insurers' funds, and promoting efficiency in the conduct of insurance business.", rule: "Rule: Policyholder protection is explicitly named as a duty of the Authority, not merely an incidental effect of regulation." },
+                { tag: "Concept 05", title: "Insurance Councils & the Expenses-of-Management Shift", desc: "The Life Insurance Council and General Insurance Council historically fixed limits on insurers' expenses of management. That specific gatekeeping role has largely moved to IRDAI's own Expenses of Management regulations, while the Councils continue as sector self-regulatory bodies (e.g. for agent examinations and professional standards).", rule: "Rule: A function once performed by an industry Council can migrate to the statutory regulator as regulations evolve — always check the current regulation in force." },
+                { tag: "Concept 06", title: "IRDAI's Regulation-Making Power", desc: "Section 114A of the Insurance Act, 1938 empowers IRDAI to frame detailed subordinate regulations — covering registration, solvency, investments, and more — which carry the force of law once notified in the Official Gazette.", rule: "Rule: Most of the day-to-day compliance detail insurers work with sits in IRDAI Regulations, not in the parent Acts themselves." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "Apex Shield's board wants absolute clarity on which body holds final regulatory authority over the company's licensing and conduct matters, ahead of an internal governance review.",
+                        question: "Which statutory body has primary regulatory jurisdiction over Apex Shield's licensing, conduct, and policyholder-protection matters?",
+                        options: [
+                            { id: "A", text: "IRDAI, under the powers and duties conferred by the IRDA Act, 1999 and the Insurance Act, 1938", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — IRDAI is the primary statutory regulator for these matters." },
+                            { id: "B", text: "The Life and General Insurance Councils, exclusively and without reference to IRDAI", isCorrect: false, misc: "MIS_COUNCIL_PRIMARY", feedback: "Incorrect — the Councils are self-regulatory bodies; IRDAI holds the primary statutory mandate." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "Ahead of a regulatory hearing, Apex Shield's legal team is briefing the board on how the Authority itself is structured.",
+                        question: "Under Section 4 of the IRDAI Act, 1999, what is the maximum permissible size of the Authority?",
+                        options: [
+                            { id: "A", text: "A Chairperson plus up to five whole-time Members and up to four part-time Members (ten in total)", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — this is the ceiling fixed under Section 4." },
+                            { id: "B", text: "A Chairperson and two Members only, with no distinction between whole-time and part-time roles", isCorrect: false, misc: "MIS_AUTH_SIZE", feedback: "Incorrect — the Act allows for up to ten members in the specific whole-time/part-time split described." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "Apex Shield's compliance team is finalising this year's expenses-of-management report and debating which body's ceiling actually applies to it.",
+                        question: "Which body's regulations now primarily govern the ceiling on Apex Shield's expenses of management, rather than the historic Insurance Councils?",
+                        options: [
+                            { id: "A", text: "IRDAI, through its own Expenses of Management regulations", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — this specific gatekeeping function has shifted to IRDAI's regulations over time." },
+                            { id: "B", text: "The Ministry of Corporate Affairs, since expenses are a company-law matter", isCorrect: false, misc: "MIS_MCA_EOM", feedback: "Incorrect — expenses of management for insurers are governed by IRDAI's sector-specific regulations, not general company law." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u2_q1", question: "1. IRDAI is a statutory body constituted under:", options: [{ id: "A", text: "The IRDA Act, 1999", isCorrect: true }, { id: "B", text: "The Insurance Act, 1938", isCorrect: false, misc: "MIS_1938_CONST" }, { id: "C", text: "The Companies Act, 2013", isCorrect: false, misc: "MIS_COMPANIES_CONST" }, { id: "D", text: "GIBNA, 1972", isCorrect: false, misc: "MIS_GIBNA_CONST" }], explanation: "IRDAI was constituted as a statutory authority under the IRDA Act, 1999." },
+                { id: "u2_q2", question: "2. IRDAI is headquartered in:", options: [{ id: "A", text: "Hyderabad", isCorrect: true }, { id: "B", text: "Mumbai", isCorrect: false, misc: "MIS_MUMBAI_HQ" }, { id: "C", text: "New Delhi", isCorrect: false, misc: "MIS_DELHI_HQ" }, { id: "D", text: "Bengaluru", isCorrect: false, misc: "MIS_BLR_HQ" }], explanation: "IRDAI's head office is located in Hyderabad." },
+                { id: "u2_q3", question: "3. Under Section 4 of the IRDAI Act, the Authority can have at most how many part-time Members?", options: [{ id: "A", text: "Four", isCorrect: true }, { id: "B", text: "Two", isCorrect: false, misc: "MIS_2_PT" }, { id: "C", text: "Six", isCorrect: false, misc: "MIS_6_PT" }, { id: "D", text: "None — all Members must be whole-time", isCorrect: false, misc: "MIS_NO_PT" }], explanation: "Section 4 permits up to four part-time Members, in addition to the Chairperson and up to five whole-time Members." },
+                { id: "u2_q4", question: "4. The Chairperson of IRDAI holds office for a fixed term or until reaching what age, whichever is earlier?", options: [{ id: "A", text: "65 years", isCorrect: true }, { id: "B", text: "58 years", isCorrect: false, misc: "MIS_58" }, { id: "C", text: "70 years", isCorrect: false, misc: "MIS_70" }, { id: "D", text: "60 years", isCorrect: false, misc: "MIS_60" }], explanation: "The upper age limit prescribed for the Chairperson is 65 years." },
+                { id: "u2_q5", question: "5. Which section of the IRDAI Act, 1999 lays down the Authority's duties, powers and functions?", options: [{ id: "A", text: "Section 14", isCorrect: true }, { id: "B", text: "Section 4", isCorrect: false, misc: "MIS_SEC4_DUTY" }, { id: "C", text: "Section 64VB", isCorrect: false, misc: "MIS_64VB" }, { id: "D", text: "Section 118", isCorrect: false, misc: "MIS_118" }], explanation: "Section 14 sets out IRDAI's duties, powers and functions; Section 4 deals with composition, and Section 64VB is an Insurance Act provision on advance premium, unrelated to IRDAI's own duties." },
+                { id: "u2_q6", question: "6. A core statutory duty of IRDAI under Section 14 is to:", options: [{ id: "A", text: "Protect the interests of policyholders", isCorrect: true }, { id: "B", text: "Fix the retail price of all consumer goods", isCorrect: false, misc: "MIS_PRICE" }, { id: "C", text: "Appoint the government's economic advisors", isCorrect: false, misc: "MIS_PM" }, { id: "D", text: "Regulate stock exchange listing requirements", isCorrect: false, misc: "MIS_SEBI_FUNC" }], explanation: "Policyholder protection is explicitly named among IRDAI's Section 14 duties." },
+                { id: "u2_q7", question: "7. Which of the following was historically a function of the Insurance Councils but is now chiefly governed by IRDAI's own regulations?", options: [{ id: "A", text: "Fixing limits on insurers' expenses of management", isCorrect: true }, { id: "B", text: "Approving certificates of company incorporation", isCorrect: false, misc: "MIS_INCORP" }, { id: "C", text: "Issuing PAN cards to policyholders", isCorrect: false, misc: "MIS_PAN" }, { id: "D", text: "Conducting national elections", isCorrect: false, misc: "MIS_ELECTIONS" }], explanation: "Expenses-of-management limits, once a Council function, are now primarily governed by IRDAI's own regulations." },
+                { id: "u2_q8", question: "8. IRDAI's power to frame detailed subordinate regulations (e.g. on registration or solvency) derives mainly from:", options: [{ id: "A", text: "Section 114A of the Insurance Act, 1938", isCorrect: true }, { id: "B", text: "Article 1 of the Constitution of India", isCorrect: false, misc: "MIS_CONST_1" }, { id: "C", text: "The RBI Act, 1934", isCorrect: false, misc: "MIS_RBI_ACT" }, { id: "D", text: "The Information Technology Act, 2000", isCorrect: false, misc: "MIS_IT_ACT" }], explanation: "Section 114A of the Insurance Act, 1938 empowers IRDAI to make regulations that carry the force of law." },
+                { id: "u2_q9", question: "9. Members of the IRDAI Authority (whole-time and part-time) are appointed by:", options: [{ id: "A", text: "The Central Government", isCorrect: true }, { id: "B", text: "The State Government of Telangana", isCorrect: false, misc: "MIS_STATE_APPT" }, { id: "C", text: "The Life Insurance Council alone", isCorrect: false, misc: "MIS_COUNCIL_APPT" }, { id: "D", text: "The Supreme Court of India", isCorrect: false, misc: "MIS_SC_APPT" }], explanation: "All Members of the Authority are appointed by the Central Government." },
+                { id: "u2_q10", question: "10. The Life Insurance Council and General Insurance Council today primarily continue to function as:", options: [{ id: "A", text: "Self-regulatory bodies handling professional standards and agent-related matters within their sector", isCorrect: true }, { id: "B", text: "The sole licensing authorities for all insurers in India", isCorrect: false, misc: "MIS_COUNCIL_LICENSE" }, { id: "C", text: "Courts adjudicating policyholder consumer disputes", isCorrect: false, misc: "MIS_COUNCIL_COURT" }, { id: "D", text: "Tax collection agencies for the insurance sector", isCorrect: false, misc: "MIS_COUNCIL_TAX" }], explanation: "The Councils continue as sector self-regulatory bodies rather than as licensing authorities or adjudicators." }
+            ]
+        };
+
+        unitDatabase["unit3"] = {
+            id: "unit3",
+            title: "Unit 3: IRDAI's Licensing & Registration Functions",
+            subheading: "Certificate of Registration requirements, minimum capital norms, categories of intermediaries, and grounds for suspension or cancellation",
+            bites: [
+                { tag: "Concept 01", title: "Certificate of Registration — The Gatekeeping Requirement", desc: "No person or company may commence or carry on insurance business in India without first holding a Certificate of Registration issued by IRDAI under the Insurance Act, 1938. Operating without one can attract penal consequences.", rule: "Rule: Registration is a precondition to doing business, not a formality that can be completed afterward." },
+                { tag: "Concept 02", title: "Minimum Capital Norms", desc: "Under IRDAI's currently applicable capital regulations, life, general and standalone health insurers must hold a minimum paid-up equity capital of ₹100 crore, while reinsurers require ₹200 crore. Foreign reinsurer branches must meet a net-owned-fund benchmark, which IRDAI has progressively eased over time (from ₹5,000 crore down to ₹1,000 crore).", rule: "Rule: Capital and net-owned-fund thresholds are periodically revised by IRDAI regulation — always check the regulation currently in force before relying on a figure." },
+                { tag: "Concept 03", title: "The Staged Registration Process", desc: "Registration is not a single-step approval. It typically proceeds through an initial application/no-objection stage, followed by a detailed application demonstrating operational, technical and managerial readiness, before the final Certificate of Registration is granted.", rule: "Rule: Incorporation under company law and insurance registration under IRDAI are two separate, sequential approvals." },
+                { tag: "Concept 04", title: "Categories of Intermediaries", desc: "Insurance in India is distributed through several regulated intermediary categories: individual and corporate agents (tied to specific insurers), insurance brokers (who can place business across multiple insurers on behalf of the customer), and Third Party Administrators (TPAs), who service health insurance claims — such as cashless hospitalisation — on an insurer's behalf.", rule: "Rule: Each intermediary category has its own separate IRDAI registration and its own conduct rules." },
+                { tag: "Concept 05", title: "Agents vs Brokers — The Core Distinction", desc: "An agent (individual or corporate) solicits business on behalf of one insurer, or a small permitted number of insurers, and typically owes a duty to that insurer. A broker instead acts on behalf of the prospect or policyholder and can place business with any insurer that suits the customer's needs, under its own separate broking licence.", rule: "Rule: 'Who the intermediary owes its primary duty to' is the fastest way to tell an agent from a broker." },
+                { tag: "Concept 06", title: "Suspension & Cancellation of Registration", desc: "IRDAI can suspend or cancel an insurer's or intermediary's registration for reasons such as failure to meet solvency requirements, furnishing false information, or persistent regulatory violations — generally only after issuing a show-cause notice and giving an opportunity of being heard.", rule: "Rule: Due process (show-cause notice + hearing) is a standard safeguard before IRDAI's most severe sanctions." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "Apex Shield's founders are eager to start writing motor insurance policies immediately, even though their registration application with IRDAI is still under review.",
+                        question: "Can Apex Shield lawfully begin transacting insurance business before its Certificate of Registration is granted?",
+                        options: [
+                            { id: "A", text: "No — writing policies before the Certificate of Registration is issued is not permitted and can attract penal consequences", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — registration is a precondition to doing business, not something that can be completed retroactively." },
+                            { id: "B", text: "Yes — provided Apex Shield applies for registration within 90 days of starting business", isCorrect: false, misc: "MIS_PRE_REG_BUSINESS", feedback: "Incorrect — there is no such grace period; the Certificate must be in hand before business commences." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "Apex Shield is finalising its registration application as a standalone general insurer and needs to confirm its capital plan meets IRDAI's norms.",
+                        question: "What minimum paid-up equity capital must Apex Shield hold to satisfy IRDAI's currently applicable capital norms for a general insurer?",
+                        options: [
+                            { id: "A", text: "₹100 crore", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — this is the current minimum paid-up capital threshold for life, general and standalone health insurers." },
+                            { id: "B", text: "₹10 crore", isCorrect: false, misc: "MIS_MIN_CAPITAL_LOW", feedback: "Incorrect — ₹10 crore falls well short of the prescribed minimum for a general insurer." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "Apex Shield wants to appoint a distribution partner who can place its motor and health products with several different insurers — not just Apex Shield — depending on which policy best suits the customer.",
+                        question: "Which category of intermediary is Apex Shield's distribution partner functioning as in this scenario?",
+                        options: [
+                            { id: "A", text: "An insurance broker, since it can place business across multiple insurers on behalf of the customer", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — the ability to represent the customer across multiple insurers is the hallmark of a broker, not an agent." },
+                            { id: "B", text: "A corporate agent, since it is tied exclusively to Apex Shield", isCorrect: false, misc: "MIS_AGENT_VS_BROKER", feedback: "Incorrect — a corporate agent is tied to a limited number of specific insurers; multi-insurer placement is a broker function." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u3_q1", question: "1. Carrying on insurance business in India without a valid Certificate of Registration is:", options: [{ id: "A", text: "Not permitted, and may attract penal consequences under the Insurance Act, 1938", isCorrect: true }, { id: "B", text: "Permitted for up to one year while the application is pending", isCorrect: false, misc: "MIS_GRACE_PERIOD" }, { id: "C", text: "Permitted if the insurer has fewer than 1,000 policyholders", isCorrect: false, misc: "MIS_SMALL_INSURER" }, { id: "D", text: "A matter left entirely to State government discretion", isCorrect: false, misc: "MIS_STATE_DISCRETION" }], explanation: "Registration is a precondition to transacting insurance business; operating without it is not permitted." },
+                { id: "u3_q2", question: "2. Under IRDAI's currently applicable capital norms, the minimum paid-up equity capital for a life, general, or standalone health insurer is:", options: [{ id: "A", text: "₹100 crore", isCorrect: true }, { id: "B", text: "₹10 crore", isCorrect: false, misc: "MIS_10CR" }, { id: "C", text: "₹1,000 crore", isCorrect: false, misc: "MIS_1000CR" }, { id: "D", text: "There is no prescribed minimum", isCorrect: false, misc: "MIS_NO_MIN" }], explanation: "₹100 crore is the current minimum paid-up capital threshold for these categories of insurer." },
+                { id: "u3_q3", question: "3. The minimum paid-up capital prescribed for a reinsurer is:", options: [{ id: "A", text: "₹200 crore", isCorrect: true }, { id: "B", text: "₹50 crore", isCorrect: false, misc: "MIS_50CR_REINS" }, { id: "C", text: "₹100 crore, the same as a direct insurer", isCorrect: false, misc: "MIS_SAME_AS_INSURER" }, { id: "D", text: "₹5,000 crore", isCorrect: false, misc: "MIS_5000CR" }], explanation: "Reinsurers face a higher minimum capital requirement of ₹200 crore, distinct from direct insurers' ₹100 crore." },
+                { id: "u3_q4", question: "4. A foreign reinsurer wishing to set up a branch office in India must currently maintain a net owned fund of at least:", options: [{ id: "A", text: "₹1,000 crore", isCorrect: true }, { id: "B", text: "₹5,000 crore", isCorrect: false, misc: "MIS_OLD_NOF" }, { id: "C", text: "₹100 crore", isCorrect: false, misc: "MIS_100CR_NOF" }, { id: "D", text: "There is no NOF requirement for branch offices", isCorrect: false, misc: "MIS_NO_NOF" }], explanation: "IRDAI reduced the net-owned-fund requirement for foreign reinsurer branches from ₹5,000 crore to ₹1,000 crore to widen participation." },
+                { id: "u3_q5", question: "5. An insurance agent, as distinct from a broker, typically:", options: [{ id: "A", text: "Solicits business on behalf of one insurer (or, as a corporate agent, a limited number of insurers) rather than across the whole market", isCorrect: true }, { id: "B", text: "Is licensed to place business with any insurer of the customer's choosing", isCorrect: false, misc: "MIS_AGENT_MULTI" }, { id: "C", text: "Cannot be an individual — only a company can be an agent", isCorrect: false, misc: "MIS_AGENT_INDIVIDUAL" }, { id: "D", text: "Is appointed by IRDAI rather than by an insurer", isCorrect: false, misc: "MIS_AGENT_APPT" }], explanation: "An agent's defining feature is representing a specific insurer (or a small permitted set), unlike a broker's whole-of-market role." },
+                { id: "u3_q6", question: "6. A Third Party Administrator (TPA) in the Indian insurance market chiefly:", options: [{ id: "A", text: "Services health insurance claims on behalf of an insurer, such as cashless hospitalisation processing", isCorrect: true }, { id: "B", text: "Underwrites motor insurance risk independently of any insurer", isCorrect: false, misc: "MIS_TPA_UNDERWRITE" }, { id: "C", text: "Sets the solvency margin requirement for insurers", isCorrect: false, misc: "MIS_TPA_SOLVENCY" }, { id: "D", text: "Replaces IRDAI as the licensing authority for agents", isCorrect: false, misc: "MIS_TPA_LICENSE" }], explanation: "TPAs are claims-servicing intermediaries for health insurance, not underwriters or regulators." },
+                { id: "u3_q7", question: "7. An insurance broker differs from an agent chiefly because a broker:", options: [{ id: "A", text: "Acts on behalf of the prospect/policyholder and can place business across multiple insurers", isCorrect: true }, { id: "B", text: "Can only sell single-premium products", isCorrect: false, misc: "MIS_BROKER_SINGLE" }, { id: "C", text: "Is exempt from IRDAI licensing requirements", isCorrect: false, misc: "MIS_BROKER_EXEMPT" }, { id: "D", text: "Must be a wholly government-owned entity", isCorrect: false, misc: "MIS_BROKER_GOVT" }], explanation: "A broker's client-facing, multi-insurer role is what distinguishes it from an agent; brokers still require their own IRDAI licence." },
+                { id: "u3_q8", question: "8. Before IRDAI can cancel an insurer's or intermediary's Certificate of Registration for a regulatory violation, it must generally first:", options: [{ id: "A", text: "Issue a show-cause notice and give an opportunity of being heard", isCorrect: true }, { id: "B", text: "Obtain prior approval from the Ministry of Corporate Affairs", isCorrect: false, misc: "MIS_MCA_APPROVAL" }, { id: "C", text: "Refer the matter to the Supreme Court of India", isCorrect: false, misc: "MIS_SC_REFER" }, { id: "D", text: "Wait for a complaint from a competitor insurer", isCorrect: false, misc: "MIS_COMPETITOR_COMPLAINT" }], explanation: "Due process — a show-cause notice and a hearing — generally precedes cancellation of registration." },
+                { id: "u3_q9", question: "9. Registration of an insurer with IRDAI typically involves:", options: [{ id: "A", text: "A staged process — an initial application/no-objection stage followed by a detailed application demonstrating operational readiness before the final Certificate is granted", isCorrect: true }, { id: "B", text: "A single-step, same-day approval with no supporting documentation", isCorrect: false, misc: "MIS_SAMEDAY" }, { id: "C", text: "Approval granted automatically once the company is incorporated", isCorrect: false, misc: "MIS_AUTO_APPROVAL" }, { id: "D", text: "A process handled entirely by the Insurance Councils, not IRDAI", isCorrect: false, misc: "MIS_COUNCIL_REG" }], explanation: "Registration proceeds in stages under IRDAI, separate from and subsequent to company incorporation." },
+                { id: "u3_q10", question: "10. Grounds on which IRDAI may suspend or cancel a registration include:", options: [{ id: "A", text: "Failure to comply with solvency requirements, or furnishing false information to the regulator", isCorrect: true }, { id: "B", text: "The insurer changing its registered office address", isCorrect: false, misc: "MIS_ADDRESS_CHANGE" }, { id: "C", text: "The insurer hiring more than 500 employees", isCorrect: false, misc: "MIS_EMPLOYEE_COUNT" }, { id: "D", text: "The insurer's shares being listed on a stock exchange", isCorrect: false, misc: "MIS_LISTING" }], explanation: "Solvency non-compliance and furnishing false information are substantive regulatory grounds; the other options are not." }
+            ]
+        };
+
+        unitDatabase["unit4"] = {
+            id: "unit4",
+            title: "Unit 4: Regulations Governing Conduct of Insurance Business",
+            subheading: "Solicitation and advertising norms, policy-issuance and claim-settlement timelines, and the role and limits of Third Party Administrators",
+            bites: [
+                { tag: "Concept 01", title: "Solicitation & Sourcing of Business", desc: "Insurance business may lawfully be solicited only through persons or entities licensed by IRDAI — agents, brokers, or other authorised channels. Solicitation by unlicensed persons is prohibited, and both the insurer and the unlicensed solicitor can face regulatory consequences.", rule: "Rule: A valid IRDAI licence is the gateway to lawfully sourcing insurance business, not the insurer's internal authorisation alone." },
+                { tag: "Concept 02", title: "Advertising & Disclosure Norms", desc: "Insurance advertisements must be clear, fair, and not misleading, must display the insurer's or intermediary's name and registration details, and must never promise returns or benefits inconsistent with the actual policy terms.", rule: "Rule: An advertisement is judged by the impression it creates on an ordinary customer, not by a hidden disclaimer buried in fine print." },
+                { tag: "Concept 03", title: "Policy-Issuance Timeline & the Free-Look Period", desc: "Under the current Master Circular framework, insurers must issue a life insurance policy within 15 days of accepting the proposal. Every policyholder also gets a free-look period after receiving the policy document, during which they can review it and return it if unsatisfied.", rule: "Rule: The free-look period exists precisely because a customer often only sees the full policy wording after purchase, not before." },
+                { tag: "Concept 04", title: "Claim Settlement Timelines — Life Insurance", desc: "A death claim that does not require investigation must be settled within 15 days of intimation; where investigation is genuinely needed, the insurer must complete settlement within 45 days. Delayed payment beyond these limits attracts interest at the bank rate plus 2%.", rule: "Rule: 'Investigation needed' is a genuine exception, not a routine excuse to extend every claim to the 45-day limit." },
+                { tag: "Concept 05", title: "Claim Settlement Timelines — Cashless Health Insurance", desc: "Health insurers must approve cashless pre-authorisation within 1 hour of receiving a complete request from the hospital, and clear the final hospital discharge within 3 hours of receiving complete discharge papers. Reimbursement (non-cashless) claims must be decided within 30 days of receiving the last required document.", rule: "Rule: Cashless timelines are measured in hours, not days — a sharp tightening from older norms." },
+                { tag: "Concept 06", title: "Role & Limits of a Third Party Administrator (TPA)", desc: "A TPA services and facilitates health insurance claims on an insurer's behalf — processing paperwork, coordinating cashless approvals, and liaising with hospitals. However, the final authority to accept or repudiate (reject) a claim always rests with the insurer, never with the TPA itself.", rule: "Rule: A TPA can recommend and process; only the insurer can decide and repudiate." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "Apex Shield's marketing team wants to run a TV commercial for its new health plan claiming it gives 'guaranteed returns of 12% every year', to attract more customers.",
+                        question: "Is this advertisement compliant with IRDAI's advertising norms?",
+                        options: [
+                            { id: "A", text: "No — the advertisement is misleading because it promises returns inconsistent with the actual policy terms", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — an advertisement cannot promise benefits the underlying policy doesn't actually guarantee." },
+                            { id: "B", text: "Yes — as long as the ad also mentions 'terms and conditions apply' somewhere on screen", isCorrect: false, misc: "MIS_TC_APPLY_LOOPHOLE", feedback: "Incorrect — a small disclaimer does not cure a headline claim that misleads the ordinary viewer." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "A policyholder has been discharged from hospital and Apex Shield's TPA desk has just received the complete final discharge papers for a cashless claim.",
+                        question: "Within what maximum time must Apex Shield clear the cashless discharge once complete discharge papers are received?",
+                        options: [
+                            { id: "A", text: "3 hours", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — final discharge must be cleared within 3 hours under the current timeline framework." },
+                            { id: "B", text: "3 days", isCorrect: false, misc: "MIS_3DAYS_DISCHARGE", feedback: "Incorrect — the current requirement is measured in hours, not days." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "Apex Shield's TPA reviews a claim and recommends rejection on suspected non-disclosure, but the policyholder insists that only Apex Shield itself, not the TPA, can make this call.",
+                        question: "Who holds the final authority to repudiate (reject) this health insurance claim?",
+                        options: [
+                            { id: "A", text: "Apex Shield (the insurer) itself — the TPA can only recommend, not decide", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — the policyholder is right; repudiation authority cannot be delegated to the TPA." },
+                            { id: "B", text: "The TPA, since it processes the claim directly with the hospital", isCorrect: false, misc: "MIS_TPA_REPUDIATE", feedback: "Incorrect — a TPA facilitates claims but has no authority to repudiate them." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u4_q1", question: "1. Insurance business may lawfully be solicited only through:", options: [{ id: "A", text: "Persons or entities licensed by IRDAI, such as agents or brokers", isCorrect: true }, { id: "B", text: "Anyone the insurer chooses to authorise informally", isCorrect: false, misc: "MIS_INFORMAL_SOLICIT" }, { id: "C", text: "Chartered accountants only", isCorrect: false, misc: "MIS_CA_ONLY" }, { id: "D", text: "Employees of the Ministry of Finance", isCorrect: false, misc: "MIS_MOF_SOLICIT" }], explanation: "Only IRDAI-licensed persons or entities may lawfully solicit insurance business." },
+                { id: "u4_q2", question: "2. Under IRDAI's advertising norms, an insurance advertisement must:", options: [{ id: "A", text: "Be clear, fair, and not misleading, and consistent with the actual policy terms", isCorrect: true }, { id: "B", text: "Guarantee a minimum return regardless of the product type", isCorrect: false, misc: "MIS_GUARANTEE_RETURN" }, { id: "C", text: "Avoid mentioning the insurer's IRDAI registration number", isCorrect: false, misc: "MIS_HIDE_REGNO" }, { id: "D", text: "Be approved by the Ministry of Information and Broadcasting before every telecast", isCorrect: false, misc: "MIS_MIB_APPROVAL" }], explanation: "Advertisements must be fair, clear and non-misleading, and consistent with the actual policy — not the reverse of any of the other options." },
+                { id: "u4_q3", question: "3. Under the current Master Circular framework, insurers must issue a life insurance policy within how many days of accepting the proposal?", options: [{ id: "A", text: "15 days", isCorrect: true }, { id: "B", text: "60 days", isCorrect: false, misc: "MIS_60DAYS_ISSUE" }, { id: "C", text: "90 days", isCorrect: false, misc: "MIS_90DAYS_ISSUE" }, { id: "D", text: "There is no prescribed timeline", isCorrect: false, misc: "MIS_NO_TIMELINE_ISSUE" }], explanation: "Policies must be issued within 15 days of the insurer accepting the proposal." },
+                { id: "u4_q4", question: "4. A death claim not requiring investigation must be settled within:", options: [{ id: "A", text: "15 days of intimation", isCorrect: true }, { id: "B", text: "45 days of intimation", isCorrect: false, misc: "MIS_45_NOINVEST" }, { id: "C", text: "6 months of intimation", isCorrect: false, misc: "MIS_6MONTHS" }, { id: "D", text: "1 year of intimation", isCorrect: false, misc: "MIS_1YEAR" }], explanation: "15 days is the settlement window for death claims that do not require investigation; 45 days applies only where investigation is genuinely needed." },
+                { id: "u4_q5", question: "5. Where a death claim requires investigation, the insurer must complete settlement within:", options: [{ id: "A", text: "45 days of intimation", isCorrect: true }, { id: "B", text: "15 days of intimation", isCorrect: false, misc: "MIS_15_INVEST" }, { id: "C", text: "180 days of intimation", isCorrect: false, misc: "MIS_180DAYS" }, { id: "D", text: "There is no outer limit once investigation begins", isCorrect: false, misc: "MIS_NO_LIMIT_INVEST" }], explanation: "45 days is the outer limit even where investigation is required." },
+                { id: "u4_q6", question: "6. If an insurer delays a claim payment beyond the prescribed timeline, it must pay interest at:", options: [{ id: "A", text: "The bank rate plus 2%", isCorrect: true }, { id: "B", text: "A flat 5% per annum regardless of the bank rate", isCorrect: false, misc: "MIS_FLAT5" }, { id: "C", text: "No interest, only a written apology", isCorrect: false, misc: "MIS_NO_INTEREST" }, { id: "D", text: "A rate fixed case-by-case by the Insurance Ombudsman", isCorrect: false, misc: "MIS_OMBUDSMAN_RATE" }], explanation: "Delay interest is pegged to the bank rate plus 2%, not a flat or discretionary figure." },
+                { id: "u4_q7", question: "7. For a cashless hospitalisation claim, an insurer must clear the final hospital discharge within:", options: [{ id: "A", text: "3 hours of receiving complete discharge papers", isCorrect: true }, { id: "B", text: "3 days of receiving complete discharge papers", isCorrect: false, misc: "MIS_3DAYS_DISCHARGE_EXAM" }, { id: "C", text: "7 days of receiving complete discharge papers", isCorrect: false, misc: "MIS_7DAYS_DISCHARGE" }, { id: "D", text: "There is no fixed timeline for discharge", isCorrect: false, misc: "MIS_NO_DISCHARGE_LIMIT" }], explanation: "The current framework requires discharge clearance within 3 hours, not days." },
+                { id: "u4_q8", question: "8. A health reimbursement claim (non-cashless) must generally be decided within:", options: [{ id: "A", text: "30 days of receiving the last required document", isCorrect: true }, { id: "B", text: "90 days of receiving the last required document", isCorrect: false, misc: "MIS_90DAYS_REIMB" }, { id: "C", text: "24 hours of receiving the last required document", isCorrect: false, misc: "MIS_24HR_REIMB" }, { id: "D", text: "There is no timeline for reimbursement claims", isCorrect: false, misc: "MIS_NO_REIMB_LIMIT" }], explanation: "Reimbursement claims carry a 30-day decision window, distinct from the hour-based cashless timelines." },
+                { id: "u4_q9", question: "9. The role of a Third Party Administrator (TPA) in a health insurance claim is best described as:", options: [{ id: "A", text: "Facilitating and processing the claim on the insurer's behalf, while final acceptance or repudiation remains the insurer's decision", isCorrect: true }, { id: "B", text: "Independently deciding whether to pay or reject the claim without insurer involvement", isCorrect: false, misc: "MIS_TPA_INDEPENDENT" }, { id: "C", text: "Acting as the policyholder's legal representative before the Ombudsman", isCorrect: false, misc: "MIS_TPA_LEGAL_REP" }, { id: "D", text: "Setting the premium rates for the policy", isCorrect: false, misc: "MIS_TPA_PREMIUM" }], explanation: "A TPA facilitates and processes; only the insurer holds decision-making authority over the claim." },
+                { id: "u4_q10", question: "10. Under the current Master Circular framework, an insurer must resolve a policyholder grievance within:", options: [{ id: "A", text: "14 days of receipt", isCorrect: true }, { id: "B", text: "60 days of receipt", isCorrect: false, misc: "MIS_60DAYS_GRIEV" }, { id: "C", text: "90 days of receipt", isCorrect: false, misc: "MIS_90DAYS_GRIEV" }, { id: "D", text: "There is no timeline for grievance resolution", isCorrect: false, misc: "MIS_NO_GRIEV_LIMIT" }], explanation: "Grievances must be resolved within 14 days, with the escalation route to the Insurance Ombudsman communicated if not resolved in the complainant's favour." }
+            ]
+        };
+
+        unitDatabase["unit5"] = {
+            id: "unit5",
+            title: "Unit 5: Assignment, Nomination & Transfer of Policies",
+            subheading: "Section 38 assignment and Section 39 nomination, conditional vs absolute assignment, the beneficial nominee concept, and how assignment overrides nomination",
+            bites: [
+                { tag: "Concept 01", title: "Assignment — Transferring the Policy", desc: "Assignment under Section 38 of the Insurance Act, 1938 transfers the assignor's rights, title and interest in a policy to an assignee. It is done by an endorsement on the policy or a separate deed, followed by notice to and registration by the insurer.", rule: "Rule: Registration by the insurer is what makes an assignment effective against the insurer." },
+                { tag: "Concept 02", title: "Conditional vs Absolute Assignment", desc: "An absolute assignment vests full, unconditional ownership of the policy in the assignee. A conditional assignment — commonly used when a policy is offered as security for a loan — vests rights subject to a specified condition, and the policy reverts to the assignor if that condition is met or fails as specified.", rule: "Rule: 'Assignment as collateral security' is almost always conditional, not absolute." },
+                { tag: "Concept 03", title: "Nomination — Directing Claim Proceeds", desc: "Nomination under Section 39 lets a policyholder name a person to receive the policy proceeds if the life assured dies. Unlike assignment, nomination does not transfer ownership of the policy itself — it only directs who should be paid.", rule: "Rule: A nominee is a payee-designate, not automatically an owner of the policy." },
+                { tag: "Concept 04", title: "The Beneficial Nominee Concept", desc: "Following the 2015 amendment to Section 39, if the nominee is the policyholder's parent, spouse, children, or spouse and children, they become a 'beneficial nominee' — entitled to retain the claim proceeds absolutely, shielded from competing claims by other legal heirs.", rule: "Rule: Being a beneficial nominee depends on the nominee's relationship to the policyholder, not merely on being named as nominee." },
+                { tag: "Concept 05", title: "Changing a Nomination vs Undoing an Assignment", desc: "A policyholder can change or cancel a nomination at any time before a claim arises, simply by notifying the insurer. An assignment, once validly made and registered, transfers rights to the assignee and generally requires a formal reassignment to be reversed.", rule: "Rule: Nomination stays flexible for the policyholder; assignment is a more permanent transfer of rights." },
+                { tag: "Concept 06", title: "Assignment Overrides Nomination", desc: "Once a policy is absolutely assigned, any earlier nomination on it ceases to have effect — because the assignee, not the original policyholder, now holds the rights that the nomination operated on.", rule: "Rule: Where both an assignment and a nomination exist, check which was made later and whether the assignment is absolute; an absolute assignment generally prevails." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "An Apex Shield policyholder takes a loan from a bank and, as security for the loan, transfers all rights in his life policy to the bank via a duly executed and registered document.",
+                        question: "What has the policyholder created here?",
+                        options: [
+                            { id: "A", text: "An assignment — specifically a conditional assignment, since it is tied to repayment of the loan", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — using a policy as loan security is a textbook conditional assignment." },
+                            { id: "B", text: "A nomination in favour of the bank", isCorrect: false, misc: "MIS_NOM_VS_ASSIGN", feedback: "Incorrect — nomination only directs payment on death; it doesn't transfer rights as security for a loan." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "An Apex Shield policyholder's registered nominees are his wife and two children. On his death, a distant cousin comes forward claiming a share of the proceeds as a legal heir.",
+                        question: "Under the beneficial nominee provision, who is entitled to retain the claim proceeds?",
+                        options: [
+                            { id: "A", text: "The wife and children — as beneficial nominees they hold the proceeds absolutely, and the cousin has no claim", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — spouse and children are beneficial nominees under the amended Section 39, protected from other heirs' claims." },
+                            { id: "B", text: "The proceeds must be split equally among all legal heirs, including the cousin", isCorrect: false, misc: "MIS_LEGAL_HEIR_SPLIT", feedback: "Incorrect — the beneficial nominee provision exists precisely to prevent this kind of dilution among other legal heirs." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "An Apex Shield policy was earlier absolutely assigned by the policyholder to a business partner as a full sale of the policy's interest. A nomination in favour of the policyholder's son, made years earlier, is still on file.",
+                        question: "On the life assured's death, who is entitled to the claim proceeds — the nominee (son) or the assignee (business partner)?",
+                        options: [
+                            { id: "A", text: "The assignee (business partner) — an absolute assignment overrides any earlier nomination", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — once absolutely assigned, the nomination on file no longer has effect." },
+                            { id: "B", text: "The nominee (son), because nominations always take priority", isCorrect: false, misc: "MIS_ASSIGN_OVERRIDE", feedback: "Incorrect — an absolute assignment transfers the very rights the nomination depended on, so it prevails." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u5_q1", question: "1. Which section of the Insurance Act, 1938 deals with assignment and transfer of insurance policies?", options: [{ id: "A", text: "Section 38", isCorrect: true }, { id: "B", text: "Section 39", isCorrect: false, misc: "MIS_SEC39_ASSIGN" }, { id: "C", text: "Section 45", isCorrect: false, misc: "MIS_SEC45_ASSIGN" }, { id: "D", text: "Section 64VB", isCorrect: false, misc: "MIS_64VB_ASSIGN" }], explanation: "Section 38 governs assignment and transfer of insurance policies." },
+                { id: "u5_q2", question: "2. Which section of the Insurance Act, 1938 deals with nomination by a policyholder?", options: [{ id: "A", text: "Section 39", isCorrect: true }, { id: "B", text: "Section 38", isCorrect: false, misc: "MIS_SEC38_NOM" }, { id: "C", text: "Section 41", isCorrect: false, misc: "MIS_SEC41_NOM" }, { id: "D", text: "Section 113", isCorrect: false, misc: "MIS_SEC113_NOM" }], explanation: "Section 39 governs nomination; Section 38 is the separate provision on assignment." },
+                { id: "u5_q3", question: "3. An assignment of a life insurance policy transfers:", options: [{ id: "A", text: "The assignor's rights, title and interest in the policy to the assignee", isCorrect: true }, { id: "B", text: "Only the right to receive future bonuses, nothing else", isCorrect: false, misc: "MIS_BONUS_ONLY" }, { id: "C", text: "Nothing, until the life assured's death", isCorrect: false, misc: "MIS_NO_TRANSFER" }, { id: "D", text: "Ownership of the insurer itself", isCorrect: false, misc: "MIS_INSURER_OWNERSHIP" }], explanation: "Assignment transfers the assignor's rights, title and interest in the policy — a present transfer, not one that waits for death." },
+                { id: "u5_q4", question: "4. A conditional assignment differs from an absolute assignment in that:", options: [{ id: "A", text: "It vests rights in the assignee subject to a specified condition, reverting to the assignor if that condition is not met", isCorrect: true }, { id: "B", text: "It can never be registered with the insurer", isCorrect: false, misc: "MIS_NO_REGISTER_COND" }, { id: "C", text: "It can only be made by a company, never an individual", isCorrect: false, misc: "MIS_COMPANY_ONLY" }, { id: "D", text: "It transfers rights permanently with no possibility of reversal", isCorrect: false, misc: "MIS_PERMANENT_COND" }], explanation: "A conditional assignment is defined precisely by its condition and possible reversion — the opposite of a permanent, unconditional transfer." },
+                { id: "u5_q5", question: "5. Nomination under Section 39 primarily serves to:", options: [{ id: "A", text: "Direct to whom the policy proceeds should be paid on the life assured's death", isCorrect: true }, { id: "B", text: "Transfer full ownership of the policy during the policyholder's lifetime", isCorrect: false, misc: "MIS_NOM_TRANSFER_OWNERSHIP" }, { id: "C", text: "Fix the premium payable on the policy", isCorrect: false, misc: "MIS_NOM_PREMIUM" }, { id: "D", text: "Appoint the insurer's claims assessor", isCorrect: false, misc: "MIS_NOM_ASSESSOR" }], explanation: "Nomination only directs payment of proceeds on death; it does not transfer ownership or affect premiums." },
+                { id: "u5_q6", question: "6. A 'beneficial nominee' under the amended Section 39 is typically:", options: [{ id: "A", text: "The policyholder's parent, spouse, children, or spouse and children", isCorrect: true }, { id: "B", text: "Any person named as nominee, regardless of relationship", isCorrect: false, misc: "MIS_ANY_NOMINEE_BENEFICIAL" }, { id: "C", text: "Only a business partner of the policyholder", isCorrect: false, misc: "MIS_BUSINESS_PARTNER" }, { id: "D", text: "Only the policyholder's employer", isCorrect: false, misc: "MIS_EMPLOYER_NOMINEE" }], explanation: "Beneficial nominee status depends on the specific close-family relationships listed in the amended Section 39." },
+                { id: "u5_q7", question: "7. A beneficial nominee, on the death of the life assured, is entitled to:", options: [{ id: "A", text: "Retain the claim proceeds absolutely, protected from claims by other legal heirs", isCorrect: true }, { id: "B", text: "Hold the proceeds only in trust for equal division among all legal heirs", isCorrect: false, misc: "MIS_TRUST_DIVISION" }, { id: "C", text: "Nothing, since only assignees can receive proceeds", isCorrect: false, misc: "MIS_NOMINEE_NOTHING" }, { id: "D", text: "Half the proceeds, with the other half going to the insurer", isCorrect: false, misc: "MIS_HALF_INSURER" }], explanation: "The whole point of beneficial nominee status is absolute entitlement, not a trust arrangement or partial claim." },
+                { id: "u5_q8", question: "8. Can a policyholder change or cancel a nomination before a claim arises?", options: [{ id: "A", text: "Yes — at any time, simply by notifying the insurer", isCorrect: true }, { id: "B", text: "No — a nomination, once made, is permanent", isCorrect: false, misc: "MIS_PERMANENT_NOM" }, { id: "C", text: "Only with the written consent of the existing nominee", isCorrect: false, misc: "MIS_NOMINEE_CONSENT" }, { id: "D", text: "Only through a court order", isCorrect: false, misc: "MIS_COURT_ORDER_NOM" }], explanation: "Nomination remains freely changeable by the policyholder before a claim arises, unlike an assignment." },
+                { id: "u5_q9", question: "9. If a policy has been absolutely assigned by the policyholder, an earlier nomination on that policy:", options: [{ id: "A", text: "Ceases to have effect, since the assignee now holds the rights the nomination operated on", isCorrect: true }, { id: "B", text: "Continues to operate exactly as before", isCorrect: false, misc: "MIS_NOM_SURVIVES" }, { id: "C", text: "Automatically transfers to the assignee's family", isCorrect: false, misc: "MIS_NOM_TO_ASSIGNEE_FAMILY" }, { id: "D", text: "Must be re-registered by the insurer every year", isCorrect: false, misc: "MIS_ANNUAL_REREG" }], explanation: "An absolute assignment overrides and effectively extinguishes any earlier nomination on the same policy." },
+                { id: "u5_q10", question: "10. For an assignment to be effective against the insurer, it generally must be:", options: [{ id: "A", text: "Notified to the insurer and registered by the insurer in its records", isCorrect: true }, { id: "B", text: "Kept confidential and never disclosed to the insurer", isCorrect: false, misc: "MIS_CONFIDENTIAL_ASSIGN" }, { id: "C", text: "Approved by the Insurance Ombudsman in advance", isCorrect: false, misc: "MIS_OMBUDSMAN_APPROVE_ASSIGN" }, { id: "D", text: "Published in a national newspaper", isCorrect: false, misc: "MIS_NEWSPAPER_ASSIGN" }], explanation: "Notice to and registration by the insurer is what makes an assignment binding on the insurer." }
+            ]
+        };
+
+        unitDatabase["unit6"] = {
+            id: "unit6",
+            title: "Unit 6: Protection of Policyholders' Interests",
+            subheading: "Pre-sale disclosure, the current 30-day free-look period, anytime cancellation, mandatory nomination and policy loans, mis-selling safeguards, and the internal grievance redressal groundwork",
+            bites: [
+                { tag: "Concept 01", title: "Pre-Sale Disclosure & Suitability", desc: "Before selling a policy, an insurer or intermediary must give the prospect accurate, standardised information on the product's features, benefits and exclusions — so the sale rests on complete information, not a partial or misleading pitch.", rule: "Rule: A sale built on an incomplete picture of the product is a disclosure failure, whether or not anything was technically false." },
+                { tag: "Concept 02", title: "The Free-Look Period, In Detail", desc: "Every policyholder gets a free-look period — now 30 days from receipt of the policy document, raised from the earlier 15 days — to review the policy and cancel it if unsatisfied. On a valid free-look cancellation, the insurer refunds the premium after deductions such as proportionate risk premium, medical examination costs, and stamp duty; unit-linked policies also have their units repurchased at NAV.", rule: "Rule: The refund itself must reach the policyholder within 7 days of a valid free-look cancellation." },
+                { tag: "Concept 03", title: "Anytime Cancellation of Retail Policies", desc: "Separately from the free-look window, a retail policyholder can cancel certain policies at any point during the policy term simply by notifying the insurer, and is entitled to a refund for the unexpired period of cover.", rule: "Rule: Free-look and anytime cancellation are two distinct rights — don't assume a policyholder's only exit option is the free-look window." },
+                { tag: "Concept 04", title: "Mandatory Nomination & Policy Loan Facility", desc: "Current norms require that no life insurance policy be issued without obtaining a nomination, and that a policy loan facility be built into all life insurance savings products, giving policyholders a standing liquidity option against their own policy.", rule: "Rule: Nomination is now a condition of issuance, not an optional add-on the policyholder may skip." },
+                { tag: "Concept 05", title: "Mis-Selling Safeguards", desc: "Regulations require insurers to put mechanisms in place to curb mis-selling and misrepresentation at the point of sale, including checking that the product actually sold matches the customer's disclosed needs — since a mis-sold policy is the single biggest driver of policyholder grievances.", rule: "Rule: 'Matches the customer's disclosed needs' is the test — not merely whether the customer signed the proposal form." },
+                { tag: "Concept 06", title: "Grievance Redressal Systems — The Groundwork", desc: "Every insurer must maintain a robust internal grievance redressal system to address policyholder complaints promptly. This internal mechanism is the first rung of a broader dispute-resolution ladder that escalates to the Insurance Ombudsman if the grievance remains unresolved — the subject of the next unit.", rule: "Rule: A policyholder is generally expected to try the insurer's own grievance cell before escalating externally." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "A prospect buys an Apex Shield ULIP after the sales agent verbally assures her the plan 'guarantees' a fixed return, but she never receives any written summary of the product's features or exclusions.",
+                        question: "Has Apex Shield met its pre-sale disclosure obligation in this case?",
+                        options: [
+                            { id: "A", text: "No — a verbal claim of guaranteed returns, with no written summary of features and exclusions, fails the disclosure standard", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — pre-sale disclosure requires standardised written information, not just a verbal assurance." },
+                            { id: "B", text: "Yes — a verbal explanation from the sales agent is sufficient on its own", isCorrect: false, misc: "MIS_VERBAL_DISCLOSURE_OK", feedback: "Incorrect — disclosure obligations are not satisfied by verbal claims alone, especially ones inconsistent with the product's actual terms." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "An Apex Shield policyholder receives her policy document electronically on day 1. On day 25, she decides to cancel because the terms don't match what she expected.",
+                        question: "Is she still within her free-look window to cancel and get a refund?",
+                        options: [
+                            { id: "A", text: "Yes — the free-look period is 30 days from receipt of the policy document, so day 25 is still within it", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — the free-look period was extended to 30 days under the current framework." },
+                            { id: "B", text: "No — the free-look period is only 15 days, so it has already expired", isCorrect: false, misc: "MIS_OLD_15DAY_FREELOOK", feedback: "Incorrect — 15 days was the earlier standard; the current period is 30 days." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "Apex Shield's grievance cell receives a policyholder's written complaint about a delayed claim.",
+                        question: "What should Apex Shield's grievance cell do first, before the policyholder can approach the Insurance Ombudsman?",
+                        options: [
+                            { id: "A", text: "Attempt to resolve the grievance internally within the prescribed timeline, since internal resolution is the first step of the redressal ladder", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — the internal grievance mechanism is meant to be tried first." },
+                            { id: "B", text: "Immediately forward the complaint to the Ombudsman without attempting internal resolution", isCorrect: false, misc: "MIS_SKIP_INTERNAL_GRIEVANCE", feedback: "Incorrect — skipping the insurer's own internal resolution step bypasses the intended first rung of the ladder." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u6_q1", question: "1. Under the current regulatory framework, the free-look period for a life insurance policy is:", options: [{ id: "A", text: "30 days from receipt of the policy document", isCorrect: true }, { id: "B", text: "15 days from receipt of the policy document, with no exceptions", isCorrect: false, misc: "MIS_15DAY_ONLY" }, { id: "C", text: "7 days from the date of proposal", isCorrect: false, misc: "MIS_7DAY_PROPOSAL" }, { id: "D", text: "There is no free-look period for life policies", isCorrect: false, misc: "MIS_NO_FREELOOK" }], explanation: "The free-look period was extended to a uniform 30 days from receipt of the policy document." },
+                { id: "u6_q2", question: "2. On a valid free-look cancellation, the insurer must refund the premium:", options: [{ id: "A", text: "After deducting items such as proportionate risk premium, medical examination costs and stamp duty", isCorrect: true }, { id: "B", text: "In full, with no deductions permitted", isCorrect: false, misc: "MIS_FULL_REFUND_NO_DEDUCT" }, { id: "C", text: "Only after one year has passed", isCorrect: false, misc: "MIS_1YR_REFUND" }, { id: "D", text: "Only if the policyholder pays a penalty first", isCorrect: false, misc: "MIS_PENALTY_REFUND" }], explanation: "Specific, limited deductions are permitted; the refund is not full and unconditional." },
+                { id: "u6_q3", question: "3. For a unit-linked insurance policy cancelled during the free-look period, in addition to standard deductions the insurer must also:", options: [{ id: "A", text: "Repurchase the units at their price (NAV) as on the date the policy is returned", isCorrect: true }, { id: "B", text: "Convert the units into a fixed deposit", isCorrect: false, misc: "MIS_FD_CONVERT" }, { id: "C", text: "Forfeit the entire fund value", isCorrect: false, misc: "MIS_FORFEIT_FUND" }, { id: "D", text: "Transfer the units to a different policyholder", isCorrect: false, misc: "MIS_TRANSFER_UNITS" }], explanation: "Unit-linked free-look cancellations involve NAV-based unit repurchase in addition to the standard deductions." },
+                { id: "u6_q4", question: "4. Once a valid free-look cancellation is processed, within how many days must the insurer refund the premium?", options: [{ id: "A", text: "7 days", isCorrect: true }, { id: "B", text: "60 days", isCorrect: false, misc: "MIS_60DAY_REFUND" }, { id: "C", text: "1 year", isCorrect: false, misc: "MIS_1YR_REFUND_TIMELINE" }, { id: "D", text: "There is no timeline for the refund", isCorrect: false, misc: "MIS_NO_REFUND_TIMELINE" }], explanation: "The refund itself is subject to a 7-day processing timeline." },
+                { id: "u6_q5", question: "5. Separately from the free-look period, a retail policyholder can typically cancel certain policies:", options: [{ id: "A", text: "At any point during the policy term, by notifying the insurer, with a refund for the unexpired period of cover", isCorrect: true }, { id: "B", text: "Only in the first policy year", isCorrect: false, misc: "MIS_FIRST_YEAR_ONLY" }, { id: "C", text: "Never, once the free-look period has passed", isCorrect: false, misc: "MIS_NEVER_AFTER_FREELOOK" }, { id: "D", text: "Only with a court order", isCorrect: false, misc: "MIS_COURT_ORDER_CANCEL" }], explanation: "Anytime cancellation is a separate, ongoing right distinct from the time-limited free-look window." },
+                { id: "u6_q6", question: "6. Under current norms, a life insurance policy:", options: [{ id: "A", text: "Cannot be issued without obtaining a nomination", isCorrect: true }, { id: "B", text: "May be issued without any nomination, which can be added later at the insurer's discretion", isCorrect: false, misc: "MIS_NOM_OPTIONAL" }, { id: "C", text: "Requires nomination only for policies above a certain sum assured", isCorrect: false, misc: "MIS_NOM_THRESHOLD" }, { id: "D", text: "Never requires nomination for individual policyholders", isCorrect: false, misc: "MIS_NOM_NEVER" }], explanation: "Nomination is now a precondition for issuing a life insurance policy, not a discretionary add-on." },
+                { id: "u6_q7", question: "7. A policy loan facility is now mandatory for:", options: [{ id: "A", text: "All life insurance savings products", isCorrect: true }, { id: "B", text: "Only term insurance products with no savings component", isCorrect: false, misc: "MIS_TERM_LOAN" }, { id: "C", text: "Only policies bought online", isCorrect: false, misc: "MIS_ONLINE_LOAN" }, { id: "D", text: "No insurance products — policy loans remain entirely optional for insurers", isCorrect: false, misc: "MIS_LOAN_OPTIONAL" }], explanation: "Current norms mandate a policy loan facility across life insurance savings products specifically." },
+                { id: "u6_q8", question: "8. Mis-selling safeguards under current regulations primarily aim to ensure that:", options: [{ id: "A", text: "The product sold genuinely matches the customer's disclosed needs and is not misrepresented at the point of sale", isCorrect: true }, { id: "B", text: "Every customer buys the highest-premium product available", isCorrect: false, misc: "MIS_HIGHEST_PREMIUM" }, { id: "C", text: "Agents are exempt from disclosing product features", isCorrect: false, misc: "MIS_AGENT_EXEMPT_DISCLOSE" }, { id: "D", text: "Only online sales are subject to mis-selling checks", isCorrect: false, misc: "MIS_ONLINE_ONLY_MISSELL" }], explanation: "Mis-selling safeguards are about suitability and accurate representation, not maximising premium or exempting any sales channel." },
+                { id: "u6_q9", question: "9. An insurer's internal grievance redressal system is best understood as:", options: [{ id: "A", text: "The first step in the dispute-resolution ladder, to be used before a policyholder escalates to the Insurance Ombudsman", isCorrect: true }, { id: "B", text: "An optional facility insurers may choose not to offer", isCorrect: false, misc: "MIS_GRIEV_OPTIONAL" }, { id: "C", text: "A replacement for the Insurance Ombudsman, making the Ombudsman route unnecessary", isCorrect: false, misc: "MIS_GRIEV_REPLACES_OMBUDSMAN" }, { id: "D", text: "Available only to policyholders who hire a lawyer", isCorrect: false, misc: "MIS_LAWYER_REQUIRED" }], explanation: "Internal grievance redressal is mandatory and precedes, rather than replaces, the Ombudsman route." },
+                { id: "u6_q10", question: "10. Which of the following reflects a genuine current policyholder-protection reform?", options: [{ id: "A", text: "Insurers must offer a website tool letting customers verify authorised distribution channels", isCorrect: true }, { id: "B", text: "Insurers may sell policies through completely unverifiable, unlicensed channels", isCorrect: false, misc: "MIS_UNVERIFIED_CHANNELS" }, { id: "C", text: "Policyholders must pay a proposal deposit before any life or health proposal is considered", isCorrect: false, misc: "MIS_PROPOSAL_DEPOSIT_REQUIRED" }, { id: "D", text: "Insurers are exempt from displaying registration details on their website", isCorrect: false, misc: "MIS_EXEMPT_REGDISPLAY" }], explanation: "A channel-verification tool is a genuine current reform; the other options describe the opposite of what is actually required." }
+            ]
+        };
+
+        unitDatabase["unit7"] = {
+            id: "unit7",
+            title: "Unit 7: Dispute Resolution Mechanism",
+            subheading: "The Insurance Ombudsman's jurisdiction and process, award enforcement, and the alternative Consumer Protection Act route",
+            bites: [
+                { tag: "Concept 01", title: "The Insurance Ombudsman — Purpose & Legal Basis", desc: "The Insurance Ombudsman is an independent grievance redressal mechanism constituted under the Insurance Ombudsman Rules, 2017, giving individual policyholders a free, non-court route to resolve disputes over deficiency of service or claim disputes.", rule: "Rule: Filing a complaint with the Ombudsman costs the policyholder nothing." },
+                { tag: "Concept 02", title: "Pecuniary & Subject-Matter Jurisdiction", desc: "The Ombudsman can generally entertain complaints where the claim value does not exceed ₹50 lakh, and only for personal lines of insurance — individual life, health, motor and home policies, group policies, and policies of sole proprietorships or micro-enterprises — not large corporate insurance disputes.", rule: "Rule: A high-value or purely commercial dispute falls outside the Ombudsman's jurisdiction, however genuine the grievance." },
+                { tag: "Concept 03", title: "When a Policyholder Can Approach the Ombudsman", desc: "A complainant must first approach the insurer's own grievance redressal officer. Only if the grievance is not resolved within 30 days, is rejected, or the complainant remains dissatisfied, can they escalate to the Ombudsman — and generally only within one year of the insurer's final reply or the expiry of that 30-day window.", rule: "Rule: The Ombudsman is a second-stage remedy, not a substitute for the insurer's own internal process." },
+                { tag: "Concept 04", title: "Mediation, Recommendation & Award", desc: "The Ombudsman first attempts mediation between the parties. Where both agree, a Recommendation is issued within one month of mutual written consent to mediate; failing mediation, the Ombudsman passes a binding Award within three months of receiving all required documents from the complainant.", rule: "Rule: An Award is binding on the insurer if accepted; a Recommendation is a mediated settlement both sides have already agreed to." },
+                { tag: "Concept 05", title: "Enforcement of Awards", desc: "If the insurer does not appeal and accepts an Award, it must comply within the prescribed period; failing this, a penalty of ₹5,000 per day becomes payable to the complainant until the Award is honoured. A dissatisfied complainant remains free to pursue other remedies such as the Consumer Fora or civil courts.", rule: "Rule: The daily penalty exists specifically to prevent insurers from sitting on an accepted Award." },
+                { tag: "Concept 06", title: "The Consumer Protection Act Route — An Alternative Forum", desc: "A policyholder can, instead of or after using the Ombudsman route, take a dispute to the Consumer Fora under the Consumer Protection Act, 2019, structured in three tiers by claim value: the District Commission (up to ₹50 lakh), the State Commission (₹50 lakh to ₹2 crore), and the National Commission (above ₹2 crore).", rule: "Rule: A dispute too large for the Ombudsman's ₹50 lakh cap can still be pursued — just through a Consumer Commission or civil court instead." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "An Apex Shield policyholder's health claim was rejected. Frustrated, she wants to go straight to the Insurance Ombudsman without contacting Apex Shield's own grievance cell first.",
+                        question: "Can she directly approach the Insurance Ombudsman at this stage?",
+                        options: [
+                            { id: "A", text: "No — she must first approach Apex Shield's grievance redressal officer and wait for a response or the expiry of 30 days before escalating to the Ombudsman", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — the Ombudsman is a second-stage remedy after the insurer's own internal process." },
+                            { id: "B", text: "Yes — the Ombudsman can be approached directly at any time, with no prior step required", isCorrect: false, misc: "MIS_SKIP_INSURER_FIRST", feedback: "Incorrect — exhausting (or waiting out) the insurer's internal grievance process is generally a precondition." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "A dispute over an Apex Shield motor insurance claim is valued at ₹75 lakh.",
+                        question: "Can this dispute be taken to the Insurance Ombudsman?",
+                        options: [
+                            { id: "A", text: "No — the claim value exceeds the Ombudsman's ₹50 lakh pecuniary limit, so it must go to a Consumer Commission or civil court instead", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — ₹75 lakh is beyond the Ombudsman's ₹50 lakh ceiling." },
+                            { id: "B", text: "Yes — the Ombudsman has no pecuniary limit on claim value", isCorrect: false, misc: "MIS_NO_PECUNIARY_LIMIT", feedback: "Incorrect — the Ombudsman's jurisdiction is capped at ₹50 lakh." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "The Ombudsman passes an Award against Apex Shield, and Apex Shield does not appeal it. Well past the prescribed compliance period, Apex Shield still hasn't paid.",
+                        question: "What consequence does Apex Shield now face for this delay?",
+                        options: [
+                            { id: "A", text: "A penalty of ₹5,000 per day becomes payable to the complainant until the Award is honoured", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — this daily penalty is designed precisely to deter delayed compliance with accepted Awards." },
+                            { id: "B", text: "No consequence, since there is no penalty for delayed compliance with an Award", isCorrect: false, misc: "MIS_NO_AWARD_PENALTY", feedback: "Incorrect — delayed compliance triggers a specific daily penalty payable to the complainant." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u7_q1", question: "1. The Insurance Ombudsman mechanism in India currently operates under:", options: [{ id: "A", text: "The Insurance Ombudsman Rules, 2017", isCorrect: true }, { id: "B", text: "The Insurance Act, 1938 exclusively, with no separate rules", isCorrect: false, misc: "MIS_NO_SEPARATE_RULES" }, { id: "C", text: "The Companies Act, 2013", isCorrect: false, misc: "MIS_COMPANIES_OMBUDSMAN" }, { id: "D", text: "The Consumer Protection Act, 2019 exclusively", isCorrect: false, misc: "MIS_CPA_ONLY_OMBUDSMAN" }], explanation: "The Insurance Ombudsman Rules, 2017 govern the Ombudsman mechanism specifically." },
+                { id: "u7_q2", question: "2. The Insurance Ombudsman can generally entertain complaints where the claim value does not exceed:", options: [{ id: "A", text: "₹50 lakh", isCorrect: true }, { id: "B", text: "₹5 lakh", isCorrect: false, misc: "MIS_5LAKH" }, { id: "C", text: "₹5 crore", isCorrect: false, misc: "MIS_5CRORE" }, { id: "D", text: "There is no pecuniary limit", isCorrect: false, misc: "MIS_NO_LIMIT_EXAM" }], explanation: "₹50 lakh is the current pecuniary ceiling for the Ombudsman's jurisdiction." },
+                { id: "u7_q3", question: "3. Before approaching the Insurance Ombudsman, a policyholder must generally first:", options: [{ id: "A", text: "Approach the insurer's own grievance redressal officer and allow time for a response", isCorrect: true }, { id: "B", text: "File a case in the High Court", isCorrect: false, misc: "MIS_HC_FIRST" }, { id: "C", text: "Obtain a no-objection certificate from IRDAI", isCorrect: false, misc: "MIS_NOC_IRDAI" }, { id: "D", text: "Pay a filing fee to the Ombudsman's office", isCorrect: false, misc: "MIS_FILING_FEE" }], explanation: "The insurer's internal grievance process is the required first step; the Ombudsman route is free of charge." },
+                { id: "u7_q4", question: "4. A complaint to the Insurance Ombudsman must generally be filed within:", options: [{ id: "A", text: "One year of the insurer's final reply (or the expiry of the response window)", isCorrect: true }, { id: "B", text: "One month of the original claim being made", isCorrect: false, misc: "MIS_1MONTH_LIMIT" }, { id: "C", text: "There is no time limit at all", isCorrect: false, misc: "MIS_NO_TIME_LIMIT" }, { id: "D", text: "Five years of the policy's inception", isCorrect: false, misc: "MIS_5YEAR_LIMIT" }], explanation: "The one-year window runs from the insurer's final reply or the expiry of its response period, not from the original claim or policy inception." },
+                { id: "u7_q5", question: "5. Where mediation between the parties succeeds before the Insurance Ombudsman, the Ombudsman issues a:", options: [{ id: "A", text: "Recommendation, within one month of mutual written consent to mediate", isCorrect: true }, { id: "B", text: "Criminal conviction order", isCorrect: false, misc: "MIS_CRIMINAL_ORDER" }, { id: "C", text: "Show-cause notice to the policyholder", isCorrect: false, misc: "MIS_SCN_POLICYHOLDER" }, { id: "D", text: "Direction cancelling the insurer's licence", isCorrect: false, misc: "MIS_CANCEL_LICENSE_OMBUDSMAN" }], explanation: "A successful mediation results in a Recommendation, distinct from the binding Award issued when mediation fails." },
+                { id: "u7_q6", question: "6. Where mediation fails, the Insurance Ombudsman must pass a binding Award within:", options: [{ id: "A", text: "Three months of receiving all requirements from the complainant", isCorrect: true }, { id: "B", text: "24 hours of the complaint being filed", isCorrect: false, misc: "MIS_24HR_AWARD" }, { id: "C", text: "Five years of the complaint being filed", isCorrect: false, misc: "MIS_5YEAR_AWARD" }, { id: "D", text: "There is no timeline for passing an Award", isCorrect: false, misc: "MIS_NO_AWARD_TIMELINE" }], explanation: "The three-month timeline runs from receipt of all requirements, not from the initial filing." },
+                { id: "u7_q7", question: "7. If an insurer fails to honour an accepted Ombudsman Award within the prescribed period, it becomes liable to pay:", options: [{ id: "A", text: "A penalty of ₹5,000 per day to the complainant", isCorrect: true }, { id: "B", text: "A one-time fine of ₹100 to IRDAI", isCorrect: false, misc: "MIS_100_FINE" }, { id: "C", text: "No penalty, since Awards are only advisory", isCorrect: false, misc: "MIS_ADVISORY_ONLY" }, { id: "D", text: "Double the claim amount automatically", isCorrect: false, misc: "MIS_DOUBLE_CLAIM" }], explanation: "An accepted Award is binding, not merely advisory, and delay triggers a ₹5,000-per-day penalty." },
+                { id: "u7_q8", question: "8. The Insurance Ombudsman mechanism is generally available for:", options: [{ id: "A", text: "Personal lines of insurance — individual, group, sole proprietorship and micro-enterprise policies", isCorrect: true }, { id: "B", text: "Large corporate insurance disputes of any value", isCorrect: false, misc: "MIS_CORPORATE_ANY_VALUE" }, { id: "C", text: "Disputes already decided by a court or consumer forum", isCorrect: false, misc: "MIS_ALREADY_DECIDED" }, { id: "D", text: "Criminal complaints against insurance agents", isCorrect: false, misc: "MIS_CRIMINAL_AGENT" }], explanation: "The Ombudsman's scope is limited to personal-line and small-enterprise policies, and excludes matters already decided elsewhere." },
+                { id: "u7_q9", question: "9. Under the Consumer Protection Act, 2019 framework, a dispute valued at ₹1.5 crore would ordinarily be filed before the:", options: [{ id: "A", text: "State Commission", isCorrect: true }, { id: "B", text: "District Commission", isCorrect: false, misc: "MIS_DISTRICT_WRONG" }, { id: "C", text: "National Commission", isCorrect: false, misc: "MIS_NATIONAL_WRONG" }, { id: "D", text: "Insurance Ombudsman", isCorrect: false, misc: "MIS_OMBUDSMAN_WRONG_FORUM" }], explanation: "₹1.5 crore falls within the State Commission's band of ₹50 lakh to ₹2 crore, and exceeds the Ombudsman's ₹50 lakh ceiling." },
+                { id: "u7_q10", question: "10. A policyholder dissatisfied with an Insurance Ombudsman's Award, or whose claim exceeds the Ombudsman's pecuniary limit, may:", options: [{ id: "A", text: "Pursue the dispute before the Consumer Fora or civil courts instead", isCorrect: true }, { id: "B", text: "No longer pursue the matter through any forum", isCorrect: false, misc: "MIS_NO_FURTHER_REMEDY" }, { id: "C", text: "Only appeal to the same Ombudsman a second time", isCorrect: false, misc: "MIS_SAME_OMBUDSMAN_APPEAL" }, { id: "D", text: "Approach the Reserve Bank of India for review", isCorrect: false, misc: "MIS_RBI_REVIEW" }], explanation: "The Ombudsman route doesn't extinguish a policyholder's other legal remedies through Consumer Fora or civil courts." }
+            ]
+        };
+
+        unitDatabase["unit8"] = {
+            id: "unit8",
+            title: "Unit 8: Financial Regulation — Solvency Margin & Investment Regulations",
+            subheading: "The 150% solvency ratio requirement, Section 64VA intervention powers, mandated government/infrastructure investments, exposure norms, and the shift toward Risk-Based Capital",
+            bites: [
+                { tag: "Concept 01", title: "The Solvency Margin — A Core Financial Safeguard", desc: "Every insurer must maintain a solvency ratio — Available Solvency Margin divided by Required Solvency Margin — of at least 150%, ensuring assets exceed liabilities by a comfortable buffer that protects policyholders even under adverse claim experience.", rule: "Rule: 150% is a floor, not a target — most insurers run comfortably above it precisely to absorb shocks." },
+                { tag: "Concept 02", title: "Consequences of Falling Below the Control Level", desc: "If an insurer's solvency ratio falls below the 150% control level, IRDAI can intervene under Section 64VA of the Insurance Act, 1938 — directing corrective action, restricting new business, or requiring additional capital infusion.", rule: "Rule: A solvency breach triggers a structured regulatory response, not an automatic shutdown." },
+                { tag: "Concept 03", title: "Government Securities Investment Mandate", desc: "Investment regulations require life insurers to invest a minimum prescribed share of their life fund in Central Government securities, and a further minimum share in Central and State Government securities and other approved securities combined, before investing elsewhere.", rule: "Rule: A meaningful share of every life fund is anchored in government securities before any commercial investment discretion applies." },
+                { tag: "Concept 04", title: "Infrastructure & Social Sector Investment Obligation", desc: "Insurers are also required to channel a minimum prescribed share of their funds into infrastructure and social sector investments, reflecting the sector's role in nation-building alongside pure commercial returns.", rule: "Rule: Insurance fund allocation is deliberately not purely profit-driven — it carries a development mandate." },
+                { tag: "Concept 05", title: "Exposure & Prudential Norms", desc: "To prevent concentration risk, investment regulations cap how much an insurer can invest in a single company, promoter group, or industry sector — regardless of how attractive that investment might look in isolation.", rule: "Rule: No single company or promoter group, however promising, can absorb an unlimited share of policyholders' funds." },
+                { tag: "Concept 06", title: "The Move Toward Risk-Based Capital (RBC)", desc: "IRDAI has been developing a Risk-Based Capital framework to eventually replace today's flat, rule-based 150% solvency requirement with a model that ties capital requirements to each insurer's actual risk profile — aligning India with global practices like the European Union's Solvency II.", rule: "Rule: RBC is a proposed evolution of the solvency framework, not a replacement already in force." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "Apex Shield's quarterly solvency computation shows its Available Solvency Margin at 130% of its Required Solvency Margin.",
+                        question: "Is Apex Shield compliant with IRDAI's solvency requirement?",
+                        options: [
+                            { id: "A", text: "No — 130% is below the mandatory 150% control level, so Apex Shield is non-compliant and can expect regulatory intervention", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — anything below the 150% control level triggers regulatory scrutiny." },
+                            { id: "B", text: "Yes — anything above 100% is considered fully compliant", isCorrect: false, misc: "MIS_100PERCENT_ENOUGH", feedback: "Incorrect — 100% is not the compliance threshold; the mandated control level is 150%." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "Apex Shield's CFO proposes investing a very large share of the life fund in a single fast-growing infrastructure company promoted by a personal contact, since it offers the best expected returns.",
+                        question: "Is this investment plan compliant with IRDAI's investment regulations?",
+                        options: [
+                            { id: "A", text: "No — exposure norms cap how much can be invested in a single company or promoter group, regardless of expected returns", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — concentrated exposure to one company is capped precisely to manage this kind of risk." },
+                            { id: "B", text: "Yes — insurers are free to invest their entire fund in any single company they choose", isCorrect: false, misc: "MIS_NO_EXPOSURE_LIMIT", feedback: "Incorrect — exposure limits exist specifically to prevent this kind of concentration." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "Apex Shield's investment team asks why a portion of the life fund must go into government securities even though corporate bonds offer higher yields.",
+                        question: "What is the regulatory basis for this requirement?",
+                        options: [
+                            { id: "A", text: "IRDAI's investment regulations mandate a minimum share of the life fund in Central/State Government and other approved securities, prioritising policyholder safety over yield", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — the government securities mandate is a deliberate regulatory safety anchor, not an internal choice." },
+                            { id: "B", text: "There is no such requirement — it is purely the insurer's own internal investment policy", isCorrect: false, misc: "MIS_INTERNAL_POLICY_ONLY", feedback: "Incorrect — this is a binding regulatory requirement, not a discretionary internal preference." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u8_q1", question: "1. The minimum solvency ratio an Indian insurer must maintain under current norms is:", options: [{ id: "A", text: "150%", isCorrect: true }, { id: "B", text: "50%", isCorrect: false, misc: "MIS_50PCT" }, { id: "C", text: "100%", isCorrect: false, misc: "MIS_100PCT" }, { id: "D", text: "There is no minimum prescribed", isCorrect: false, misc: "MIS_NO_MIN_SOLVENCY" }], explanation: "150% is the mandated minimum solvency ratio for Indian insurers." },
+                { id: "u8_q2", question: "2. The Solvency Ratio is defined as the ratio of:", options: [{ id: "A", text: "Available Solvency Margin to Required Solvency Margin", isCorrect: true }, { id: "B", text: "Total premium collected to total claims paid", isCorrect: false, misc: "MIS_PREMIUM_CLAIMS_RATIO" }, { id: "C", text: "Net profit to total assets", isCorrect: false, misc: "MIS_PROFIT_ASSETS" }, { id: "D", text: "Number of policies sold to number of employees", isCorrect: false, misc: "MIS_POLICIES_EMPLOYEES" }], explanation: "Solvency Ratio is specifically Available Solvency Margin divided by Required Solvency Margin." },
+                { id: "u8_q3", question: "3. If an insurer's solvency ratio falls below the mandated control level, IRDAI may:", options: [{ id: "A", text: "Direct corrective action, restrict new business, or require additional capital infusion", isCorrect: true }, { id: "B", text: "Take no action, since solvency is purely an internal management matter", isCorrect: false, misc: "MIS_NO_ACTION_SOLVENCY" }, { id: "C", text: "Automatically cancel the insurer's registration with no process", isCorrect: false, misc: "MIS_AUTO_CANCEL_SOLVENCY" }, { id: "D", text: "Transfer the insurer's entire business to a competitor overnight", isCorrect: false, misc: "MIS_TRANSFER_COMPETITOR" }], explanation: "IRDAI has structured intervention powers under Section 64VA, not an automatic or arbitrary response." },
+                { id: "u8_q4", question: "4. Under investment regulations, life insurers are required to invest a minimum share of their funds in:", options: [{ id: "A", text: "Central Government securities, and a further combined minimum in Central/State Government and other approved securities", isCorrect: true }, { id: "B", text: "Cryptocurrency assets", isCorrect: false, misc: "MIS_CRYPTO" }, { id: "C", text: "Foreign real estate exclusively", isCorrect: false, misc: "MIS_FOREIGN_REALESTATE" }, { id: "D", text: "Their own group companies' shares only", isCorrect: false, misc: "MIS_GROUP_SHARES_ONLY" }], explanation: "Government securities form a mandated base allocation under investment regulations." },
+                { id: "u8_q5", question: "5. Insurers are also required to direct a minimum prescribed share of their funds toward:", options: [{ id: "A", text: "Infrastructure and social sector investments", isCorrect: true }, { id: "B", text: "Purely speculative derivatives trading", isCorrect: false, misc: "MIS_SPECULATIVE_DERIVATIVES" }, { id: "C", text: "Foreign lottery instruments", isCorrect: false, misc: "MIS_FOREIGN_LOTTERY" }, { id: "D", text: "There is no such obligation", isCorrect: false, misc: "MIS_NO_INFRA_OBLIGATION" }], explanation: "Infrastructure and social sector investment is a distinct mandated allocation, separate from government securities." },
+                { id: "u8_q6", question: "6. Exposure norms in investment regulation primarily exist to:", options: [{ id: "A", text: "Prevent excessive concentration of an insurer's funds in a single company, promoter group, or sector", isCorrect: true }, { id: "B", text: "Guarantee a fixed minimum return on every investment", isCorrect: false, misc: "MIS_GUARANTEE_RETURN_INVEST" }, { id: "C", text: "Ban insurers from holding any government securities", isCorrect: false, misc: "MIS_BAN_GOVT_SEC" }, { id: "D", text: "Allow insurers to invest their entire fund in one promoter's companies for efficiency", isCorrect: false, misc: "MIS_EFFICIENCY_CONCENTRATION" }], explanation: "Exposure norms are a diversification safeguard, not a return guarantee or a licence to concentrate risk." },
+                { id: "u8_q7", question: "7. The Risk-Based Capital (RBC) framework being developed by IRDAI is intended to:", options: [{ id: "A", text: "Tie an insurer's capital requirement to its actual risk profile, replacing the current flat 150% rule-based approach", isCorrect: true }, { id: "B", text: "Eliminate all solvency requirements altogether", isCorrect: false, misc: "MIS_ELIMINATE_SOLVENCY" }, { id: "C", text: "Apply only to reinsurers, never to direct insurers", isCorrect: false, misc: "MIS_REINSURER_ONLY_RBC" }, { id: "D", text: "Fix every insurer's solvency ratio at exactly 100%, regardless of risk", isCorrect: false, misc: "MIS_FIXED_100_RBC" }], explanation: "RBC is designed to make capital requirements risk-sensitive, not to remove them or apply only to a narrow segment." },
+                { id: "u8_q8", question: "8. A regulatory framework similar in spirit to India's proposed Risk-Based Capital approach, already implemented internationally, is:", options: [{ id: "A", text: "Solvency II (European Union)", isCorrect: true }, { id: "B", text: "Basel I (banking)", isCorrect: false, misc: "MIS_BASEL1" }, { id: "C", text: "GDPR (data protection)", isCorrect: false, misc: "MIS_GDPR" }, { id: "D", text: "FATCA (tax reporting)", isCorrect: false, misc: "MIS_FATCA" }], explanation: "Solvency II is the EU's risk-based insurance capital framework that India's RBC roadmap draws inspiration from." },
+                { id: "u8_q9", question: "9. Which provision of the Insurance Act, 1938 empowers IRDAI to act when an insurer's solvency margin falls short?", options: [{ id: "A", text: "Section 64VA", isCorrect: true }, { id: "B", text: "Section 39", isCorrect: false, misc: "MIS_SEC39_SOLVENCY" }, { id: "C", text: "Section 14", isCorrect: false, misc: "MIS_SEC14_SOLVENCY" }, { id: "D", text: "Section 118", isCorrect: false, misc: "MIS_SEC118_SOLVENCY" }], explanation: "Section 64VA specifically addresses solvency margin shortfalls and IRDAI's response powers." },
+                { id: "u8_q10", question: "10. An insurer's Available Solvency Margin must be maintained at a level not less than:", options: [{ id: "A", text: "The higher of 100% of the Required Solvency Margin or the prescribed percentage of minimum capital", isCorrect: true }, { id: "B", text: "A flat ₹1 lakh, regardless of the insurer's size", isCorrect: false, misc: "MIS_FLAT_1LAKH" }, { id: "C", text: "50% of the Required Solvency Margin only", isCorrect: false, misc: "MIS_50PCT_RSM_ONLY" }, { id: "D", text: "There is no defined basis for this figure", isCorrect: false, misc: "MIS_NO_BASIS_ASM" }], explanation: "The Available Solvency Margin floor is defined as the higher of these two benchmarks, not a single flat figure." }
+            ]
+        };
+
+        unitDatabase["unit9"] = {
+            id: "unit9",
+            title: "Unit 9: International Trends & Comparative Insurance Regulation",
+            subheading: "Rule-based vs principles-based vs risk-based models, the IAIS and its Insurance Core Principles, Solvency II, twin-peaks regulation, and ComFrame for global insurance groups",
+            bites: [
+                { tag: "Concept 01", title: "Three Broad Regulatory Models", desc: "Insurance regulation globally tends to follow one of three broad approaches: rule-based (detailed, prescriptive rules — historically India's model), principles-based (broad, outcomes-focused standards, as used by the UK), and risk-based (capital and supervisory intensity tied to an insurer's actual risk profile, as under the EU's Solvency II).", rule: "Rule: These models are not mutually exclusive — most regulators, including India's, blend elements of more than one." },
+                { tag: "Concept 02", title: "IAIS — The Global Standard-Setter", desc: "The International Association of Insurance Supervisors (IAIS) sets non-binding global standards called Insurance Core Principles (ICPs), which member regulators — including IRDAI — use as a benchmark when designing or reforming their own national regulations.", rule: "Rule: The IAIS shapes global insurance supervision by influence and benchmarking, not by direct legal authority over any country." },
+                { tag: "Concept 03", title: "Solvency II — The EU Benchmark", desc: "Solvency II is the European Union's risk-based capital framework, requiring insurers to hold capital calibrated to their specific risk exposures rather than a flat percentage. It has directly influenced India's own developing move toward a Risk-Based Capital approach.", rule: "Rule: Solvency II is the most commonly cited international reference point whenever India's RBC roadmap is discussed." },
+                { tag: "Concept 04", title: "The Twin-Peaks & Single-Regulator Models", desc: "Some jurisdictions, such as the UK, split insurance regulation between a prudential regulator (financial soundness) and a separate conduct regulator (market behaviour) — the 'twin-peaks' model. Others, like India, use a single integrated regulator (IRDAI) responsible for both.", rule: "Rule: Under India's model, the same regulator that checks an insurer's solvency also polices its sales conduct." },
+                { tag: "Concept 05", title: "ComFrame & Supervision of Global Insurance Groups", desc: "For large insurance groups operating across many countries, the IAIS has developed ComFrame (the Common Framework for the Supervision of Internationally Active Insurance Groups), which coordinates supervision among multiple national regulators so no single country has to police a truly global insurer alone.", rule: "Rule: ComFrame is about coordination among regulators, not a single global insurance law replacing national ones." },
+                { tag: "Concept 06", title: "Why International Trends Matter for India", desc: "IRDAI's reforms — from FDI liberalisation, to the Risk-Based Capital roadmap, to digital-first policy issuance — are frequently benchmarked against international practice, since a globally credible regulatory regime helps attract foreign capital and reinsurance capacity into the Indian market.", rule: "Rule: International alignment is pursued for practical market-access reasons, not merely for symbolic conformity." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "Apex Shield's global reinsurance partner operates under the EU's Solvency II framework and asks whether Apex Shield's capital requirements are calculated the same way.",
+                        question: "How does Apex Shield's current solvency framework compare to Solvency II?",
+                        options: [
+                            { id: "A", text: "Apex Shield currently follows India's rule-based 150% solvency margin, not the fully risk-based capital calculation used under Solvency II", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — India's current framework is rule-based; the shift toward a Solvency-II-style risk-based approach is still in development." },
+                            { id: "B", text: "They are identical, since all countries use the same solvency formula", isCorrect: false, misc: "MIS_SAME_SOLVENCY_GLOBAL", feedback: "Incorrect — solvency frameworks vary significantly by jurisdiction; India's and the EU's are not the same." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "Apex Shield's compliance head reads a newly published Insurance Core Principle from the IAIS and wonders whether it is automatically legally binding on Apex Shield tomorrow.",
+                        question: "Are IAIS Insurance Core Principles automatically binding law in India?",
+                        options: [
+                            { id: "A", text: "No — ICPs are non-binding international standards; they only take legal effect in India if and when IRDAI incorporates them into its own regulations", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — ICPs guide reform; they don't override domestic law on their own." },
+                            { id: "B", text: "Yes — IAIS standards automatically override Indian law the moment they are published", isCorrect: false, misc: "MIS_IAIS_AUTO_BINDING", feedback: "Incorrect — the IAIS has no power to directly legislate for any country, including India." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "Apex Shield is comparing India's single-regulator model to the UK, where insurance oversight is structured differently.",
+                        question: "What model does the UK use, and how does it differ from India's approach?",
+                        options: [
+                            { id: "A", text: "The UK uses a 'twin-peaks' model splitting prudential and conduct regulation between two regulators, unlike India's single integrated regulator (IRDAI)", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — this is the core structural difference between the two systems." },
+                            { id: "B", text: "The UK has no insurance regulator at all, unlike India", isCorrect: false, misc: "MIS_UK_NO_REGULATOR", feedback: "Incorrect — the UK has two dedicated regulators covering insurance, just organised differently from India's single-regulator model." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u9_q1", question: "1. A regulatory approach that ties an insurer's capital requirement closely to its specific risk profile is best described as:", options: [{ id: "A", text: "Risk-based regulation", isCorrect: true }, { id: "B", text: "Rule-based regulation", isCorrect: false, misc: "MIS_RULEBASED_LABEL" }, { id: "C", text: "No regulation at all", isCorrect: false, misc: "MIS_NO_REG_LABEL" }, { id: "D", text: "Criminal law regulation", isCorrect: false, misc: "MIS_CRIMINAL_LABEL" }], explanation: "Risk-based regulation calibrates capital to actual risk, unlike a flat rule-based percentage." },
+                { id: "u9_q2", question: "2. The International Association of Insurance Supervisors (IAIS) primarily functions to:", options: [{ id: "A", text: "Set non-binding global standards (Insurance Core Principles) that national regulators can adopt", isCorrect: true }, { id: "B", text: "Directly license insurers in every country", isCorrect: false, misc: "MIS_IAIS_LICENSES" }, { id: "C", text: "Replace national regulators entirely", isCorrect: false, misc: "MIS_IAIS_REPLACES" }, { id: "D", text: "Collect insurance premiums on behalf of member countries", isCorrect: false, misc: "MIS_IAIS_COLLECTS_PREMIUM" }], explanation: "The IAIS is a standard-setter, not a licensing body or premium collector." },
+                { id: "u9_q3", question: "3. Insurance Core Principles (ICPs) issued by the IAIS become legally binding in India only when:", options: [{ id: "A", text: "IRDAI incorporates them into India's own regulations", isCorrect: true }, { id: "B", text: "They are published, automatically overriding domestic law", isCorrect: false, misc: "MIS_ICP_AUTO_OVERRIDE" }, { id: "C", text: "The United Nations ratifies them", isCorrect: false, misc: "MIS_UN_RATIFY" }, { id: "D", text: "They never become binding, even after adoption", isCorrect: false, misc: "MIS_NEVER_BINDING" }], explanation: "ICPs need domestic incorporation by IRDAI to have legal effect in India." },
+                { id: "u9_q4", question: "4. Solvency II is best described as:", options: [{ id: "A", text: "The European Union's risk-based capital framework for insurers", isCorrect: true }, { id: "B", text: "India's current solvency framework", isCorrect: false, misc: "MIS_SOLVENCY2_INDIA" }, { id: "C", text: "A United States federal insurance law", isCorrect: false, misc: "MIS_SOLVENCY2_US" }, { id: "D", text: "A World Trade Organization treaty on insurance", isCorrect: false, misc: "MIS_SOLVENCY2_WTO" }], explanation: "Solvency II is specifically the EU's risk-based insurance capital regime." },
+                { id: "u9_q5", question: "5. India's move toward a Risk-Based Capital (RBC) framework is significantly influenced by international benchmarks such as:", options: [{ id: "A", text: "The EU's Solvency II framework", isCorrect: true }, { id: "B", text: "The Geneva Conventions", isCorrect: false, misc: "MIS_GENEVA" }, { id: "C", text: "The Kyoto Protocol", isCorrect: false, misc: "MIS_KYOTO" }, { id: "D", text: "The Paris Climate Agreement", isCorrect: false, misc: "MIS_PARIS_AGREEMENT" }], explanation: "Solvency II is the relevant financial-regulation benchmark; the other options are unrelated international agreements." },
+                { id: "u9_q6", question: "6. The 'twin-peaks' model of financial regulation, used in jurisdictions like the UK, splits regulatory responsibility between:", options: [{ id: "A", text: "A prudential regulator (financial soundness) and a conduct regulator (market behaviour)", isCorrect: true }, { id: "B", text: "A regulator for life insurance and a separate one for general insurance only", isCorrect: false, misc: "MIS_LIFE_GENERAL_SPLIT" }, { id: "C", text: "A regulator for domestic insurers and one for foreign insurers only", isCorrect: false, misc: "MIS_DOMESTIC_FOREIGN_SPLIT" }, { id: "D", text: "A regulator for large insurers and one for small insurers only", isCorrect: false, misc: "MIS_SIZE_SPLIT" }], explanation: "Twin-peaks specifically separates prudential soundness oversight from conduct-of-business oversight." },
+                { id: "u9_q7", question: "7. India's regulatory structure, in contrast to the UK's twin-peaks model, uses:", options: [{ id: "A", text: "A single integrated regulator (IRDAI) responsible for both prudential and conduct matters", isCorrect: true }, { id: "B", text: "No regulator at all for insurance", isCorrect: false, misc: "MIS_NO_REGULATOR_INDIA" }, { id: "C", text: "Three separate regulators for life, health and general insurance", isCorrect: false, misc: "MIS_THREE_REGULATORS_INDIA" }, { id: "D", text: "A regulator based outside India", isCorrect: false, misc: "MIS_FOREIGN_REGULATOR_INDIA" }], explanation: "IRDAI is a single integrated regulator covering both prudential and conduct dimensions." },
+                { id: "u9_q8", question: "8. ComFrame, developed by the IAIS, is primarily concerned with:", options: [{ id: "A", text: "Coordinating supervision of large insurance groups that operate across multiple countries", isCorrect: true }, { id: "B", text: "Setting global insurance premium rates", isCorrect: false, misc: "MIS_COMFRAME_PREMIUM" }, { id: "C", text: "Replacing all national insurance laws with a single global law", isCorrect: false, misc: "MIS_COMFRAME_REPLACE_LAW" }, { id: "D", text: "Banning cross-border reinsurance entirely", isCorrect: false, misc: "MIS_COMFRAME_BAN_REINSURANCE" }], explanation: "ComFrame coordinates multi-country supervision of internationally active insurance groups; it does not replace national law or ban reinsurance." },
+                { id: "u9_q9", question: "9. A key reason India's insurance reforms (FDI liberalisation, RBC roadmap, digital policy issuance) are benchmarked against international practice is:", options: [{ id: "A", text: "A globally credible regulatory regime helps attract foreign capital and reinsurance capacity into the Indian market", isCorrect: true }, { id: "B", text: "International benchmarking is a purely symbolic exercise with no practical purpose", isCorrect: false, misc: "MIS_SYMBOLIC_ONLY" }, { id: "C", text: "It is legally mandatory under a binding UN treaty", isCorrect: false, misc: "MIS_UN_TREATY_MANDATORY" }, { id: "D", text: "It has no connection to attracting foreign investment", isCorrect: false, misc: "MIS_NO_FDI_LINK" }], explanation: "Regulatory credibility and international alignment have a direct, practical link to attracting foreign capital and reinsurance capacity." },
+                { id: "u9_q10", question: "10. Historically, India's insurance regulatory approach has been closer to a:", options: [{ id: "A", text: "Rule-based model, with detailed, prescriptive regulations", isCorrect: true }, { id: "B", text: "Purely principles-based model with no detailed rules", isCorrect: false, misc: "MIS_PURE_PRINCIPLES_INDIA" }, { id: "C", text: "Fully risk-based model identical to Solvency II", isCorrect: false, misc: "MIS_FULL_RBC_INDIA_ALREADY" }, { id: "D", text: "No regulatory model at all", isCorrect: false, misc: "MIS_NO_MODEL_INDIA" }], explanation: "India's regulatory tradition has been predominantly rule-based, with the RBC shift still underway rather than complete." }
+            ]
+        };
+
+        // Placeholder units — scheduled per PROJECT_MASTER.md, not yet built
+        unitDatabase["unit10"] = {
+            id: "unit10",
+            title: "Unit 10: Right to Information Act, 2005 (Annexure Track)",
+            subheading: "Applicability to public-sector insurers vs private insurers, PIOs and response timelines, Section 8 exemptions, and the appeal/penalty structure",
+            bites: [
+                { tag: "Concept 01", title: "RTI Applicability — Who Is Covered", desc: "The RTI Act, 2005 applies to 'public authorities' — bodies owned, controlled or substantially financed by government. Public-sector insurers and IRDAI itself qualify as public authorities; privately owned insurers generally fall outside RTI's scope.", rule: "Rule: Being 'an insurer' does not automatically bring RTI obligations — ownership and control by government is what matters." },
+                { tag: "Concept 02", title: "PIOs & the Request Process", desc: "Every public authority designates Public Information Officers (PIOs), and often Assistant PIOs at sub-offices, who receive RTI applications and are responsible for furnishing the requested information or a reasoned refusal.", rule: "Rule: A refusal must be reasoned and tied to a specific exemption, not simply silence." },
+                { tag: "Concept 03", title: "Response Timelines", desc: "Standard RTI requests must be answered within 30 days of receipt. Where the request concerns life or personal liberty, the timeline shortens dramatically to 48 hours. Requests routed through an Assistant PIO get five additional days.", rule: "Rule: The 48-hour timeline is a narrow, urgent exception — not the default for every sensitive-sounding request." },
+                { tag: "Concept 04", title: "Fees & Cost Recovery", desc: "Applicants generally pay a nominal application fee, plus further charges for actual costs such as photocopying, and Below Poverty Line (BPL) applicants are exempt from these fees under the rules.", rule: "Rule: Fees fund cost recovery, not gatekeeping — they're kept deliberately low, with a full waiver for BPL applicants." },
+                { tag: "Concept 05", title: "Exemptions from Disclosure (Section 8)", desc: "Certain categories of information are exempt from RTI disclosure, including matters affecting national security, cabinet deliberations, and commercially sensitive information such as trade secrets or proprietary actuarial/underwriting models — unless larger public interest favours disclosure.", rule: "Rule: Even an exempt category can still be disclosed if a genuine larger public interest outweighs the harm of disclosure." },
+                { tag: "Concept 06", title: "Appeals & Penalties", desc: "A rejected or unanswered request can be escalated: first to the public authority's own Appellate Authority within 30 days, then to the Information Commission within 90 days of that order. A PIO who unreasonably delays or refuses information can be fined up to ₹250 per day of delay, capped at ₹25,000.", rule: "Rule: The penalty falls on the PIO personally for unjustified delay, not on the applicant." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "Apex Shield is a wholly privately-owned general insurer. A customer files an RTI application asking Apex Shield to disclose its internal underwriting manual.",
+                        question: "Is Apex Shield obligated to respond to this RTI request?",
+                        options: [
+                            { id: "A", text: "No — Apex Shield is a private insurer, not a 'public authority' under the RTI Act, so RTI obligations don't apply to it", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — RTI's reach depends on government ownership/control, which a private insurer like Apex Shield lacks." },
+                            { id: "B", text: "Yes — RTI applies to every insurer in India, public or private", isCorrect: false, misc: "MIS_RTI_APPLIES_PRIVATE", feedback: "Incorrect — RTI only binds public authorities; private insurers are outside its scope." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "A policyholder files an RTI request with IRDAI (a public authority) asking for details of a specific insurer's confidential actuarial pricing model.",
+                        question: "Can IRDAI refuse this particular request under an RTI exemption?",
+                        options: [
+                            { id: "A", text: "Yes — commercially sensitive information like a proprietary actuarial pricing model can be exempted under Section 8, unless larger public interest favours disclosure", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — this is a textbook Section 8 commercial-confidence exemption, subject to the public-interest override." },
+                            { id: "B", text: "No — IRDAI must disclose absolutely everything requested with no exemptions ever", isCorrect: false, misc: "MIS_NO_EXEMPTIONS_EVER", feedback: "Incorrect — Section 8 exemptions genuinely exist and apply to categories like this." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "A public-sector insurer's PIO fails to respond to a valid RTI request within the standard timeline, with no valid reason.",
+                        question: "What consequence can the PIO face for this unjustified delay?",
+                        options: [
+                            { id: "A", text: "A penalty of up to ₹250 per day of delay, capped at ₹25,000, under Section 20 of the RTI Act", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — this personal penalty on the PIO exists precisely to deter unjustified delay." },
+                            { id: "B", text: "No consequence at all, since RTI timelines are only advisory", isCorrect: false, misc: "MIS_RTI_TIMELINE_ADVISORY", feedback: "Incorrect — RTI timelines are enforceable, backed by a real penalty provision." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u10_q1", question: "1. Under the RTI Act, 2005, which type of insurer is generally covered as a 'public authority'?", options: [{ id: "A", text: "A public-sector insurer, such as one substantially owned by the government", isCorrect: true }, { id: "B", text: "Every privately owned insurer in India", isCorrect: false, misc: "MIS_PRIVATE_COVERED" }, { id: "C", text: "No insurer of any kind is covered", isCorrect: false, misc: "MIS_NO_INSURER_COVERED" }, { id: "D", text: "Only foreign branch insurers", isCorrect: false, misc: "MIS_FOREIGN_BRANCH_COVERED" }], explanation: "Government ownership/control is the deciding factor; public-sector insurers qualify, private ones generally don't." },
+                { id: "u10_q2", question: "2. IRDAI, as a statutory regulatory authority, is:", options: [{ id: "A", text: "A public authority subject to the RTI Act", isCorrect: true }, { id: "B", text: "Completely outside the scope of the RTI Act", isCorrect: false, misc: "MIS_IRDAI_OUTSIDE_RTI" }, { id: "C", text: "Exempt only because it regulates private companies", isCorrect: false, misc: "MIS_IRDAI_EXEMPT_REASON" }, { id: "D", text: "Subject to RTI only for its own solvency data", isCorrect: false, misc: "MIS_IRDAI_PARTIAL_RTI" }], explanation: "As a statutory body, IRDAI itself is a public authority under RTI, not merely a regulator of others' RTI obligations." },
+                { id: "u10_q3", question: "3. The standard timeline for a public authority to respond to an RTI request is:", options: [{ id: "A", text: "30 days of receipt", isCorrect: true }, { id: "B", text: "90 days of receipt", isCorrect: false, misc: "MIS_90DAY_RTI" }, { id: "C", text: "6 months of receipt", isCorrect: false, misc: "MIS_6MONTH_RTI" }, { id: "D", text: "There is no timeline", isCorrect: false, misc: "MIS_NO_TIMELINE_RTI" }], explanation: "30 days is the standard statutory response window." },
+                { id: "u10_q4", question: "4. Where an RTI request concerns the life or personal liberty of a person, the response timeline shortens to:", options: [{ id: "A", text: "48 hours", isCorrect: true }, { id: "B", text: "48 days", isCorrect: false, misc: "MIS_48DAYS_RTI" }, { id: "C", text: "1 year", isCorrect: false, misc: "MIS_1YEAR_RTI_LIFE" }, { id: "D", text: "There is no special timeline for such requests", isCorrect: false, misc: "MIS_NO_SPECIAL_RTI" }], explanation: "Life-or-liberty requests get an urgent 48-hour response window, far shorter than the standard 30 days." },
+                { id: "u10_q5", question: "5. If an RTI request is routed through an Assistant Public Information Officer (APIO) rather than directly to the PIO, the response timeline:", options: [{ id: "A", text: "Extends by five additional days", isCorrect: true }, { id: "B", text: "Shortens by five days", isCorrect: false, misc: "MIS_SHORTENS_APIO" }, { id: "C", text: "Remains completely unaffected", isCorrect: false, misc: "MIS_UNAFFECTED_APIO" }, { id: "D", text: "Becomes indefinite", isCorrect: false, misc: "MIS_INDEFINITE_APIO" }], explanation: "Routing through an APIO adds five days to account for onward transmission to the PIO." },
+                { id: "u10_q6", question: "6. Under Section 8 of the RTI Act, information can be exempted from disclosure if it involves:", options: [{ id: "A", text: "Commercially sensitive trade secrets or matters affecting national security, subject to a public-interest override", isCorrect: true }, { id: "B", text: "The applicant's own name and address", isCorrect: false, misc: "MIS_APPLICANT_NAME_EXEMPT" }, { id: "C", text: "The public authority's official working hours", isCorrect: false, misc: "MIS_WORKING_HOURS_EXEMPT" }, { id: "D", text: "Nothing — no exemptions exist under the RTI Act", isCorrect: false, misc: "MIS_NO_EXEMPTIONS_SEC8" }], explanation: "Section 8 lists genuine exemption categories, always subject to the larger public-interest test." },
+                { id: "u10_q7", question: "7. A first appeal against a PIO's refusal or non-response under the RTI Act must generally be filed within:", options: [{ id: "A", text: "30 days of the PIO's decision (or deemed refusal)", isCorrect: true }, { id: "B", text: "1 day of the PIO's decision", isCorrect: false, misc: "MIS_1DAY_APPEAL" }, { id: "C", text: "5 years of the PIO's decision", isCorrect: false, misc: "MIS_5YEAR_APPEAL" }, { id: "D", text: "There is no appeal mechanism under the RTI Act", isCorrect: false, misc: "MIS_NO_APPEAL_RTI" }], explanation: "30 days is the standard window for a first appeal to the departmental Appellate Authority." },
+                { id: "u10_q8", question: "8. A second appeal, after the first appeal is decided, lies before the:", options: [{ id: "A", text: "Central or State Information Commission, within 90 days of the first appellate order", isCorrect: true }, { id: "B", text: "Supreme Court of India directly, with no other option", isCorrect: false, misc: "MIS_SC_DIRECT_RTI" }, { id: "C", text: "Insurance Ombudsman", isCorrect: false, misc: "MIS_OMBUDSMAN_RTI_APPEAL" }, { id: "D", text: "Local police station", isCorrect: false, misc: "MIS_POLICE_RTI_APPEAL" }], explanation: "The Information Commission is the designated second-appeal forum under RTI, unrelated to the insurance-specific Ombudsman." },
+                { id: "u10_q9", question: "9. A PIO who unreasonably delays or refuses to provide information under the RTI Act can be penalised:", options: [{ id: "A", text: "Up to ₹250 per day of delay, capped at ₹25,000", isCorrect: true }, { id: "B", text: "With immediate imprisonment for one year, with no fine", isCorrect: false, misc: "MIS_IMPRISONMENT_RTI" }, { id: "C", text: "With no penalty of any kind", isCorrect: false, misc: "MIS_NO_PENALTY_RTI" }, { id: "D", text: "By forfeiting the public authority's registration", isCorrect: false, misc: "MIS_FORFEIT_REG_RTI" }], explanation: "The RTI Act's Section 20 penalty is a capped daily fine on the PIO, not imprisonment or institutional forfeiture." },
+                { id: "u10_q10", question: "10. Under RTI rules, applicants belonging to the Below Poverty Line (BPL) category are typically:", options: [{ id: "A", text: "Exempt from paying the standard RTI application fee", isCorrect: true }, { id: "B", text: "Required to pay double the standard fee", isCorrect: false, misc: "MIS_DOUBLE_FEE_BPL" }, { id: "C", text: "Barred from filing RTI requests altogether", isCorrect: false, misc: "MIS_BARRED_BPL" }, { id: "D", text: "Required to file only through a lawyer", isCorrect: false, misc: "MIS_LAWYER_REQUIRED_BPL" }], explanation: "BPL applicants are specifically exempted from the application fee under the RTI rules." }
+            ]
+        };
+
+        unitDatabase["unit11"] = {
+            id: "unit11",
+            title: "Unit 11: Grievance Redressal System (Annexure Track)",
+            subheading: "The end-to-end grievance ladder, IRDAI's Bima Bharosa portal, complaint flow and visibility, and who may file a grievance",
+            bites: [
+                { tag: "Concept 01", title: "The Grievance Redressal Ladder", desc: "India's insurance grievance system is a layered ladder: first the insurer's own Grievance Redressal Officer/Cell, then IRDAI's monitoring and escalation channel, and finally the Insurance Ombudsman or Consumer Fora/courts if the grievance still remains unresolved.", rule: "Rule: Each rung of the ladder exists to be tried before jumping to the next — the system is designed sequentially, not as parallel options." },
+                { tag: "Concept 02", title: "Bima Bharosa — IRDAI's Central Grievance Portal", desc: "Bima Bharosa — a 2022 rebrand and upgrade of the earlier Integrated Grievance Management System (IGMS), first launched in 2011 — is IRDAI's online platform letting policyholders register, track and escalate complaints, while giving IRDAI a central, industry-wide repository to monitor how well each insurer resolves grievances.", rule: "Rule: Bima Bharosa is a monitoring and escalation tool for IRDAI as much as it is a filing tool for policyholders." },
+                { tag: "Concept 03", title: "How a Complaint Flows Through Bima Bharosa", desc: "A complaint registered on Bima Bharosa flows simultaneously into the insurer's own system and into IRDAI's repository, and both the insurer's response and IRDAI's comments remain visible to the complainant throughout.", rule: "Rule: Nothing about the complaint's progress is hidden from the complainant once it's logged on the portal." },
+                { tag: "Concept 04", title: "Multiple Channels to Reach IRDAI", desc: "Beyond the Bima Bharosa portal itself, policyholders can also reach IRDAI's Grievance Call Centre by toll-free number or email, or send a written complaint by post — but IRDAI expects the insurer's own channel to be tried first wherever possible.", rule: "Rule: Multiple access channels exist for convenience, not to bypass the insurer-first sequence of the ladder." },
+                { tag: "Concept 05", title: "Who Can File — and Who Cannot", desc: "Only the insured person or the claimant may file a grievance through this system; the Grievance Redressal Cell generally does not entertain complaints filed on a policyholder's behalf by an agent or advocate acting independently.", rule: "Rule: The system is built around the genuine policyholder/claimant's voice, not an intermediary acting unilaterally." },
+                { tag: "Concept 06", title: "From Grievance to Escalation", desc: "If a policyholder is not satisfied with the insurer's resolution through Bima Bharosa, the complaint can be escalated for IRDAI's review of possible regulatory violations — and separately, the policyholder retains the right to approach the Insurance Ombudsman or Consumer Fora, as covered in Unit 7.", rule: "Rule: IRDAI's review of the insurer's conduct and the policyholder's own right to the Ombudsman/Consumer Fora are two distinct, parallel avenues." }
+            ],
+            sandbox: {
+                initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                stages: [
+                    {
+                        stage: 1,
+                        scenario: "A policyholder wants to file a complaint against Apex Shield but doesn't know where to start.",
+                        question: "What is the correct first step in the grievance redressal ladder?",
+                        options: [
+                            { id: "A", text: "Register the complaint with Apex Shield's own Grievance Redressal Officer/Cell first", isCorrect: true, financialImpact: { complianceScore: 20 }, feedback: "Correct — the insurer's own channel is always the intended first rung of the ladder." },
+                            { id: "B", text: "Skip directly to filing a case in the Supreme Court", isCorrect: false, misc: "MIS_SKIP_TO_SC", feedback: "Incorrect — this bypasses every intended step of the grievance ladder." }
+                        ]
+                    },
+                    {
+                        stage: 2,
+                        scenario: "A policyholder registers a complaint against Apex Shield on the Bima Bharosa portal.",
+                        question: "What happens to this complaint once submitted on Bima Bharosa?",
+                        options: [
+                            { id: "A", text: "It flows simultaneously into Apex Shield's own system and into IRDAI's central repository, with both the insurer's response and IRDAI's remarks visible to the complainant", isCorrect: true, financialImpact: { complianceScore: 20, disclosuresFiled: 1 }, feedback: "Correct — this dual visibility is exactly how Bima Bharosa is designed to work." },
+                            { id: "B", text: "It is only visible to Apex Shield and never reaches IRDAI at all", isCorrect: false, misc: "MIS_BIMABHAROSA_NOT_IRDAI", feedback: "Incorrect — the entire point of Bima Bharosa is that IRDAI receives the complaint in parallel with the insurer." }
+                        ]
+                    },
+                    {
+                        stage: 3,
+                        scenario: "An insurance agent, without the policyholder's direct authorisation, tries to file a grievance on Bima Bharosa on the policyholder's behalf, purely on his own initiative.",
+                        question: "Will this complaint typically be entertained by the Grievance Redressal Cell?",
+                        options: [
+                            { id: "A", text: "No — the Cell generally does not entertain complaints filed by agents or advocates acting independently, rather than by the insured/claimant themselves", isCorrect: true, financialImpact: { complianceScore: 10 }, feedback: "Correct — the system is designed around the genuine policyholder's or claimant's own voice." },
+                            { id: "B", text: "Yes — any agent can file complaints for any policyholder without restriction", isCorrect: false, misc: "MIS_AGENT_FILES_FREELY", feedback: "Incorrect — unauthorised third-party filings by agents or advocates are generally not entertained." }
+                        ]
+                    }
+                ]
+            },
+            exam: [
+                { id: "u11_q1", question: "1. The first step in India's insurance grievance redressal ladder is generally to:", options: [{ id: "A", text: "Approach the insurer's own Grievance Redressal Officer/Cell", isCorrect: true }, { id: "B", text: "File a writ petition in the High Court", isCorrect: false, misc: "MIS_WRIT_FIRST" }, { id: "C", text: "Approach the Insurance Ombudsman directly", isCorrect: false, misc: "MIS_OMBUDSMAN_FIRST_STEP" }, { id: "D", text: "Approach the Reserve Bank of India", isCorrect: false, misc: "MIS_RBI_FIRST_STEP" }], explanation: "The insurer's own grievance cell is the designed first rung of the ladder." },
+                { id: "u11_q2", question: "2. Bima Bharosa is best described as:", options: [{ id: "A", text: "IRDAI's central online grievance registration and monitoring portal, an upgrade of the earlier IGMS", isCorrect: true }, { id: "B", text: "A private insurer's internal complaint system with no IRDAI involvement", isCorrect: false, misc: "MIS_PRIVATE_ONLY_BB" }, { id: "C", text: "A court exclusively for insurance disputes", isCorrect: false, misc: "MIS_COURT_BB" }, { id: "D", text: "A credit rating agency for insurers", isCorrect: false, misc: "MIS_RATING_AGENCY_BB" }], explanation: "Bima Bharosa is IRDAI's grievance portal and monitoring tool, not a court or rating agency." },
+                { id: "u11_q3", question: "3. When a complaint is registered through Bima Bharosa, it:", options: [{ id: "A", text: "Flows simultaneously into the insurer's own system and IRDAI's central repository", isCorrect: true }, { id: "B", text: "Is visible only to the complainant, with no insurer or IRDAI access", isCorrect: false, misc: "MIS_ONLY_COMPLAINANT_VISIBLE" }, { id: "C", text: "Is automatically deleted after 24 hours", isCorrect: false, misc: "MIS_AUTODELETE_BB" }, { id: "D", text: "Requires a court order before it can be registered", isCorrect: false, misc: "MIS_COURT_ORDER_BB" }], explanation: "Dual visibility to the insurer and IRDAI is the core design feature of the portal." },
+                { id: "u11_q4", question: "4. Besides the Bima Bharosa portal itself, a policyholder can also reach IRDAI's grievance channel through:", options: [{ id: "A", text: "A toll-free number and a dedicated complaints email address", isCorrect: true }, { id: "B", text: "Only by hiring a lawyer to appear in person at IRDAI's office", isCorrect: false, misc: "MIS_LAWYER_ONLY_BB" }, { id: "C", text: "Only through a registered chartered accountant", isCorrect: false, misc: "MIS_CA_ONLY_BB" }, { id: "D", text: "There is no alternative channel besides the portal", isCorrect: false, misc: "MIS_NO_ALT_CHANNEL_BB" }], explanation: "IRDAI's Grievance Call Centre offers a toll-free number and email as additional channels." },
+                { id: "u11_q5", question: "5. The Grievance Redressal Cell generally will NOT entertain a complaint that is:", options: [{ id: "A", text: "Filed by an agent or advocate acting independently, rather than by the insured or claimant", isCorrect: true }, { id: "B", text: "Filed directly by the policyholder themselves", isCorrect: false, misc: "MIS_DIRECT_POLICYHOLDER_REJECTED" }, { id: "C", text: "Filed by the claimant after the insured's death", isCorrect: false, misc: "MIS_CLAIMANT_REJECTED" }, { id: "D", text: "Submitted through the online portal", isCorrect: false, misc: "MIS_ONLINE_REJECTED" }], explanation: "Independent third-party filings by agents/advocates are excluded; direct filings by the insured or claimant are exactly what the system is meant to handle." },
+                { id: "u11_q6", question: "6. If a policyholder is dissatisfied with the insurer's resolution on Bima Bharosa, the complaint can be escalated for:", options: [{ id: "A", text: "IRDAI's review of possible regulatory violations by the insurer", isCorrect: true }, { id: "B", text: "Immediate criminal prosecution of the insurer's CEO, with no review process", isCorrect: false, misc: "MIS_CRIMINAL_CEO" }, { id: "C", text: "Automatic cancellation of the insurer's licence, with no review", isCorrect: false, misc: "MIS_AUTO_CANCEL_BB" }, { id: "D", text: "Nothing — Bima Bharosa is the final and only step available", isCorrect: false, misc: "MIS_FINAL_STEP_BB" }], explanation: "Escalation triggers a regulatory review process, not an automatic criminal or licensing consequence." },
+                { id: "u11_q7", question: "7. Separately from the Bima Bharosa escalation route, a dissatisfied policyholder also retains the right to approach:", options: [{ id: "A", text: "The Insurance Ombudsman or Consumer Fora, as covered in the dispute resolution framework", isCorrect: true }, { id: "B", text: "No other forum whatsoever", isCorrect: false, misc: "MIS_NO_OTHER_FORUM_BB" }, { id: "C", text: "Only a foreign regulator", isCorrect: false, misc: "MIS_FOREIGN_REGULATOR_BB" }, { id: "D", text: "Only the Ministry of Defence", isCorrect: false, misc: "MIS_MOD_BB" }], explanation: "The Ombudsman/Consumer Fora route remains available in parallel with, not instead of, the Bima Bharosa escalation." },
+                { id: "u11_q8", question: "8. IGMS, the predecessor to today's Bima Bharosa portal, was originally launched around:", options: [{ id: "A", text: "2011", isCorrect: true }, { id: "B", text: "1999", isCorrect: false, misc: "MIS_1999_IGMS" }, { id: "C", text: "2020", isCorrect: false, misc: "MIS_2020_IGMS" }, { id: "D", text: "1956", isCorrect: false, misc: "MIS_1956_IGMS" }], explanation: "IGMS was launched in 2011 and later rebranded and upgraded into Bima Bharosa in 2022." },
+                { id: "u11_q9", question: "9. The core purpose of a central grievance repository like Bima Bharosa, from IRDAI's perspective, is to:", options: [{ id: "A", text: "Monitor industry-wide grievance data and each insurer's effectiveness in resolving complaints", isCorrect: true }, { id: "B", text: "Replace the insurer's own claims department entirely", isCorrect: false, misc: "MIS_REPLACE_CLAIMS_DEPT" }, { id: "C", text: "Set premium rates for every insurer", isCorrect: false, misc: "MIS_SET_PREMIUMS_BB" }, { id: "D", text: "Issue Certificates of Registration to new insurers", isCorrect: false, misc: "MIS_ISSUE_COR_BB" }], explanation: "Industry-wide monitoring of grievance resolution effectiveness is the portal's central regulatory purpose." },
+                { id: "u11_q10", question: "10. The full grievance-to-dispute-resolution ladder in India's insurance sector runs, in order, through:", options: [{ id: "A", text: "Insurer's grievance cell → IRDAI escalation (Bima Bharosa) → Insurance Ombudsman → Consumer Fora/civil courts", isCorrect: true }, { id: "B", text: "Insurance Ombudsman → insurer's grievance cell → IRDAI escalation → Supreme Court only", isCorrect: false, misc: "MIS_WRONG_ORDER_LADDER" }, { id: "C", text: "Consumer Fora → IRDAI → insurer's grievance cell, in that order", isCorrect: false, misc: "MIS_REVERSE_ORDER_LADDER" }, { id: "D", text: "There is no defined order — any step can be skipped freely", isCorrect: false, misc: "MIS_NO_ORDER_LADDER" }], explanation: "This sequence is the intended order of the ladder, running from the insurer outward to increasingly formal external forums." }
+            ]
+        };
+
+        const pendingUnits = [];
+
+        pendingUnits.forEach(u => {
+            unitDatabase[u.key] = {
+                id: u.key,
+                title: u.title,
+                subheading: u.subheading,
+                bites: [
+                    { tag: "Status", title: "Chapter Not Yet Built", desc: "This unit follows the day-by-day build schedule in PROJECT_MASTER.md and will be populated with original concept cards in the next build session, same as Unit 1.", rule: "Rule: See PROJECT_MASTER.md \u00a7 3 for the full chapter map and build order." }
+                ],
+                sandbox: {
+                    initialState: { complianceScore: 0, riskFlags: 0, licenseHealth: 100, disclosuresFiled: 0, grievanceBacklog: 0, currentStage: 1 },
+                    stages: [
+                        { stage: 1, scenario: "This unit's Compliance Desk sandbox has not been built yet.", question: "Check back once this unit is built, or ask to build it next.", options: [{ id: "A", text: "Acknowledged — return to Unit 1", isCorrect: true, feedback: "Noted.", financialImpact: {} }] }
+                    ]
+                },
+                exam: []
+            };
+        });
+
+        let activeUnitKey = "unit1";
+        let activePartKey = "bites";
+        let activeSandboxState = {};
+        let activeExamScore = 0;
+        let activeMisconceptions = [];
+
+        function switchUnit(unitKey) {
+            activeUnitKey = unitKey;
+            activeMisconceptions = [];
+
+            // Exit milestone mode if active
+            document.getElementById('sec-milestone').classList.add('hidden');
+            document.getElementById('unit-header-row').classList.remove('hidden');
+            document.getElementById('nav-milestone').classList.remove('border-amber-500', 'bg-amber-500/20');
+
+            document.querySelectorAll('.unit-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-gray-300');
+            });
+            const selectedBtn = document.getElementById('nav-' + unitKey);
+            if (selectedBtn) {
+                selectedBtn.classList.add('active');
+                selectedBtn.classList.remove('text-gray-300');
+            }
+
+            const unit = unitDatabase[unitKey];
+            document.getElementById('current-unit-heading').innerText = unit.title;
+            document.getElementById('current-unit-subheading').innerText = unit.subheading;
+            document.getElementById('active-track-label').innerText = `${unit.title.split(':')[0]} Active`;
+
+            switchPartView('bites');
+            renderBites();
+            resetSandboxCurrentUnit();
+            renderExam();
+        }
+
+        function switchPartView(partKey) {
+            activePartKey = partKey;
+            ['bites', 'sandbox', 'exam'].forEach(pk => {
+                document.getElementById('sec-' + pk).classList.add('hidden');
+                document.getElementById('tab-' + pk).classList.remove('active');
+                document.getElementById('tab-' + pk).classList.add('text-gray-300');
+            });
+            document.getElementById('sec-' + partKey).classList.remove('hidden');
+            document.getElementById('tab-' + partKey).classList.add('active');
+            document.getElementById('tab-' + partKey).classList.remove('text-gray-300');
+        }
+
+        function renderBites() {
+            const grid = document.getElementById('bites-grid');
+            grid.innerHTML = '';
+            const bites = unitDatabase[activeUnitKey].bites;
+
+            bites.forEach(b => {
+                const card = document.createElement('div');
+                card.className = "hud-card p-4 rounded-xl space-y-2 border-t-2 border-violet-500/80 transition-all";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-mono text-violet-400 uppercase font-bold tracking-wider">${b.tag}</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
+                    </div>
+                    <h3 class="font-bold text-white text-sm">${b.title}</h3>
+                    <p class="text-gray-400 leading-relaxed text-[11px]">${b.desc}</p>
+                    <div class="bg-[#0d0b17] p-2 rounded text-[10px] text-violet-300 font-mono border border-gray-800">
+                        ${b.rule}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function resetSandboxCurrentUnit() {
+            const unit = unitDatabase[activeUnitKey];
+            activeSandboxState = JSON.parse(JSON.stringify(unit.sandbox.initialState));
+            renderSandboxStage();
+            updateGlobalLedger();
+        }
+
+        function renderSandboxStage() {
+            const unit = unitDatabase[activeUnitKey];
+            const stageData = unit.sandbox.stages[activeSandboxState.currentStage - 1];
+
+            document.getElementById('sb-stage-title').innerText = `Compliance Scenario \u2022 Stage ${activeSandboxState.currentStage} of ${unit.sandbox.stages.length}`;
+            document.getElementById('sb-scenario-text').innerText = stageData.scenario;
+            document.getElementById('sb-question-text').innerText = stageData.question;
+
+            const container = document.getElementById('sb-options-container');
+            container.innerHTML = '';
+
+            stageData.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3.5 rounded-lg bg-[#0d0b17] hover:bg-slate-800/80 border border-gray-800 hover:border-violet-500/50 text-xs text-gray-200 transition-all font-sans flex items-start gap-3";
+                btn.onclick = () => handleSandboxChoice(opt);
+                btn.innerHTML = `
+                    <span class="w-5 h-5 rounded bg-slate-800 text-violet-400 font-bold font-mono flex items-center justify-center shrink-0 text-[11px] border border-gray-700">${opt.id}</span>
+                    <span class="leading-relaxed">${opt.text}</span>
+                `;
+                container.appendChild(btn);
+            });
+
+            document.getElementById('sb-feedback-panel').classList.add('hidden');
+            document.getElementById('sb-action-container').classList.add('hidden');
+        }
+
+        function handleSandboxChoice(option) {
+            const feedbackBox = document.getElementById('sb-feedback-panel');
+            feedbackBox.classList.remove('hidden', 'bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800', 'bg-rose-950/60', 'text-rose-300', 'border-rose-800');
+
+            document.querySelectorAll('#sb-options-container button').forEach(b => b.disabled = true);
+
+            if (option.isCorrect) {
+                feedbackBox.classList.add('bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800');
+                feedbackBox.innerHTML = `<div>&#10004; <strong>Compliant</strong></div><div>${option.feedback}</div>`;
+
+                if (option.financialImpact) {
+                    for (let k in option.financialImpact) {
+                        activeSandboxState[k] = (activeSandboxState[k] || 0) + option.financialImpact[k];
+                    }
+                }
+                document.getElementById('sb-action-container').classList.remove('hidden');
+            } else {
+                feedbackBox.classList.add('bg-rose-950/60', 'text-rose-300', 'border-rose-800');
+                feedbackBox.innerHTML = `<div>&#10008; <strong>Compliance Gap [${option.misc}]:</strong> ${option.feedback}</div>`;
+
+                activeSandboxState.riskFlags = (activeSandboxState.riskFlags || 0) + 1;
+
+                if (option.misc && !activeMisconceptions.includes(option.misc)) {
+                    activeMisconceptions.push(option.misc);
+                    updateMisconceptionLedgerUI();
+                }
+
+                setTimeout(() => {
+                    document.querySelectorAll('#sb-options-container button').forEach(b => b.disabled = false);
+                }, 800);
+            }
+            updateGlobalLedger();
+        }
+
+        function advanceSandboxStage() {
+            const unit = unitDatabase[activeUnitKey];
+            if (activeSandboxState.currentStage < unit.sandbox.stages.length) {
+                activeSandboxState.currentStage += 1;
+                renderSandboxStage();
+            } else {
+                const container = document.getElementById('sb-options-container');
+                container.innerHTML = `
+                    <div class="p-5 bg-emerald-950/30 border border-emerald-800/80 rounded-xl text-center space-y-2">
+                        <span class="text-emerald-400 font-bold text-sm block">&#10004; Compliance Desk Cleared!</span>
+                        <button onclick="resetSandboxCurrentUnit()" class="mt-2 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold font-mono">
+                            Replay Sandbox
+                        </button>
+                    </div>
+                `;
+                document.getElementById('sb-feedback-panel').classList.add('hidden');
+                document.getElementById('sb-action-container').classList.add('hidden');
+            }
+            updateGlobalLedger();
+        }
+
+        function updateGlobalLedger() {
+            document.getElementById('hud-compliance').innerText = (activeSandboxState.complianceScore || 0);
+            document.getElementById('hud-risk').innerText = (activeSandboxState.riskFlags || 0);
+            document.getElementById('hud-license').innerText = Math.max(0, 100 - ((activeSandboxState.riskFlags || 0) * 10)) + '%';
+            document.getElementById('hud-disclosures').innerText = (activeSandboxState.disclosuresFiled || 0);
+            document.getElementById('hud-grievance').innerText = (activeSandboxState.grievanceBacklog || 0);
+
+            const totalStages = unitDatabase[activeUnitKey].sandbox.stages.length;
+            document.getElementById('hud-stage').innerText = `${activeSandboxState.currentStage} / ${totalStages}`;
+
+            document.getElementById('stat-compliance').innerText = (activeSandboxState.complianceScore || 0);
+            document.getElementById('stat-risk').innerText = (activeSandboxState.riskFlags || 0);
+        }
+
+        function renderExam() {
+            activeExamScore = 0;
+            document.getElementById('exam-score-display').innerText = activeExamScore;
+            const container = document.getElementById('exam-questions-container');
+            container.innerHTML = '';
+
+            const questions = unitDatabase[activeUnitKey].exam;
+            document.getElementById('exam-total-display').innerText = questions.length;
+
+            if (questions.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 italic text-xs p-4">The diagnostic exam for this unit has not been built yet — it will be added along with the concept sheets in a future build session.</p>`;
+                updateMisconceptionLedgerUI();
+                return;
+            }
+
+            questions.forEach(q => {
+                const card = document.createElement('div');
+                card.className = "bg-[#0d0b17] p-4 rounded-xl border border-gray-800/80 space-y-3";
+                card.innerHTML = `
+                    <p class="text-xs font-semibold text-white">${q.question}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs" id="opt-box-${q.id}">
+                        ${q.options.map(opt => `
+                            <button onclick="handleExamChoice('${q.id}', '${opt.id}', ${opt.isCorrect}, '${opt.misc || ''}')"
+                                class="btn-${q.id} text-left p-2.5 rounded bg-[#1a1626] hover:bg-slate-800 border border-gray-800 hover:border-violet-500/40 transition-all flex items-start gap-2">
+                                <span class="font-bold text-violet-400 font-mono">${opt.id})</span>
+                                <span class="text-gray-300 leading-snug">${opt.text}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${q.id}" class="hidden p-2.5 rounded text-[11px] font-mono leading-relaxed"></div>
+                `;
+                container.appendChild(card);
+            });
+            updateMisconceptionLedgerUI();
+        }
+
+        function handleExamChoice(qId, selectedId, isCorrect, miscCode) {
+            const q = unitDatabase[activeUnitKey].exam.find(item => item.id === qId);
+            const feedbackEl = document.getElementById('feedback-' + qId);
+            feedbackEl.classList.remove('hidden', 'bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800', 'bg-rose-950/60', 'text-rose-300', 'border-rose-800');
+            feedbackEl.classList.add('border');
+
+            document.querySelectorAll(`.btn-${qId}`).forEach(b => b.disabled = true);
+
+            globalUnitStats[activeUnitKey].attempted += 1;
+
+            if (isCorrect) {
+                feedbackEl.classList.add('bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800');
+                feedbackEl.innerHTML = `&#10004; Correct! ${q.explanation}`;
+                activeExamScore += 1;
+                document.getElementById('exam-score-display').innerText = activeExamScore;
+                globalUnitStats[activeUnitKey].correct += 1;
+            } else {
+                feedbackEl.classList.add('bg-rose-950/60', 'text-rose-300', 'border-rose-800');
+                feedbackEl.innerHTML = `&#10008; Incorrect [${miscCode}]. ${q.explanation}`;
+
+                if (miscCode && !activeMisconceptions.includes(miscCode)) {
+                    activeMisconceptions.push(miscCode);
+                    updateMisconceptionLedgerUI();
+                }
+                if (miscCode) {
+                    globalMiscLog[miscCode] = (globalMiscLog[miscCode] || 0) + 1;
+                }
+            }
+        }
+
+        function updateMisconceptionLedgerUI() {
+            const listEl = document.getElementById('misc-list-container');
+            document.getElementById('misc-counter-badge').innerText = `${activeMisconceptions.length} Flags`;
+
+            if (activeMisconceptions.length === 0) {
+                listEl.innerHTML = `<p class="text-gray-500 italic text-[11px]">No misconceptions logged. Select answers carefully.</p>`;
+            } else {
+                listEl.innerHTML = '';
+                activeMisconceptions.forEach(flag => {
+                    const item = document.createElement('div');
+                    item.className = "flex items-center justify-between bg-[#0d0b17] px-3 py-2 rounded border border-rose-900/40 text-rose-400 font-mono text-[11px]";
+                    item.innerHTML = `<span>&#9888; ${flag}</span><span class="text-gray-500 text-[10px]">Logged</span>`;
+                    listEl.appendChild(item);
+                });
+            }
+        }
+
+        // ===================== MILESTONE 1: Full Syllabus Mock & Revision =====================
+
+        function switchToMilestone() {
+            // Hide normal unit content
+            document.getElementById('unit-header-row').classList.add('hidden');
+            document.getElementById('sec-bites').classList.add('hidden');
+            document.getElementById('sec-sandbox').classList.add('hidden');
+            document.getElementById('sec-exam').classList.add('hidden');
+
+            document.querySelectorAll('.unit-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-gray-300');
+            });
+            document.getElementById('nav-milestone').classList.add('border-amber-500', 'bg-amber-500/20');
+
+            document.getElementById('sec-milestone').classList.remove('hidden');
+            document.getElementById('active-track-label').innerText = 'Milestone 1 Active';
+
+            if (mockQuestions.length === 0) generateMockExam();
+            switchMilestoneView('mock');
+        }
+
+        function switchMilestoneView(viewKey) {
+            activeMilestoneTab = viewKey;
+            ['mock', 'dashboard'].forEach(vk => {
+                document.getElementById('msec-' + vk).classList.add('hidden');
+                document.getElementById('mtab-' + vk).classList.remove('active');
+                document.getElementById('mtab-' + vk).classList.add('text-gray-300');
+            });
+            document.getElementById('msec-' + viewKey).classList.remove('hidden');
+            document.getElementById('mtab-' + viewKey).classList.add('active');
+            document.getElementById('mtab-' + viewKey).classList.remove('text-gray-300');
+
+            if (viewKey === 'dashboard') renderDashboard();
+        }
+
+        function generateMockExam() {
+            mockQuestions = [];
+            mockScore = 0;
+
+            for (let i = 1; i <= 11; i++) {
+                const unitKey = "unit" + i;
+                const bank = unitDatabase[unitKey].exam.slice();
+                // Fisher-Yates shuffle, then take first 3
+                for (let j = bank.length - 1; j > 0; j--) {
+                    const k = Math.floor(Math.random() * (j + 1));
+                    [bank[j], bank[k]] = [bank[k], bank[j]];
+                }
+                bank.slice(0, 3).forEach(q => {
+                    mockQuestions.push({ sourceUnit: unitKey, q: q });
+                });
+            }
+
+            document.getElementById('mock-score-display').innerText = '0';
+            document.getElementById('mock-total-display').innerText = mockQuestions.length;
+            document.getElementById('mock-results-panel').classList.add('hidden');
+
+            const container = document.getElementById('mock-questions-container');
+            container.innerHTML = '';
+
+            mockQuestions.forEach((entry, idx) => {
+                const q = entry.q;
+                const mqId = 'mock_' + idx + '_' + q.id;
+                const card = document.createElement('div');
+                card.className = "bg-[#0d0b17] p-4 rounded-xl border border-gray-800/80 space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs font-semibold text-white">${idx + 1}. ${q.question.replace(/^\d+\.\s*/, '')}</p>
+                        <span class="text-[9px] bg-slate-900 px-1.5 py-0.5 rounded text-amber-400 font-mono shrink-0 ml-2">${unitTitles[entry.sourceUnit].split(':')[0]}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs" id="opt-box-${mqId}">
+                        ${q.options.map(opt => `
+                            <button onclick="handleMockChoice('${mqId}', '${entry.sourceUnit}', '${q.id}', '${opt.id}', ${opt.isCorrect}, '${opt.misc || ''}')"
+                                class="btn-${mqId} text-left p-2.5 rounded bg-[#1a1626] hover:bg-slate-800 border border-gray-800 hover:border-amber-500/40 transition-all flex items-start gap-2">
+                                <span class="font-bold text-amber-400 font-mono">${opt.id})</span>
+                                <span class="text-gray-300 leading-snug">${opt.text}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${mqId}" class="hidden p-2.5 rounded text-[11px] font-mono leading-relaxed"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function handleMockChoice(mqId, sourceUnit, qId, selectedId, isCorrect, miscCode) {
+            const q = unitDatabase[sourceUnit].exam.find(item => item.id === qId);
+            const feedbackEl = document.getElementById('feedback-' + mqId);
+            feedbackEl.classList.remove('hidden', 'bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800', 'bg-rose-950/60', 'text-rose-300', 'border-rose-800');
+            feedbackEl.classList.add('border');
+
+            document.querySelectorAll(`.btn-${mqId}`).forEach(b => b.disabled = true);
+
+            globalUnitStats[sourceUnit].attempted += 1;
+
+            if (isCorrect) {
+                feedbackEl.classList.add('bg-emerald-950/60', 'text-emerald-300', 'border-emerald-800');
+                feedbackEl.innerHTML = `&#10004; Correct! ${q.explanation}`;
+                mockScore += 1;
+                document.getElementById('mock-score-display').innerText = mockScore;
+                globalUnitStats[sourceUnit].correct += 1;
+            } else {
+                feedbackEl.classList.add('bg-rose-950/60', 'text-rose-300', 'border-rose-800');
+                feedbackEl.innerHTML = `&#10008; Incorrect [${miscCode}]. ${q.explanation}`;
+                if (miscCode) globalMiscLog[miscCode] = (globalMiscLog[miscCode] || 0) + 1;
+            }
+
+            const allAnswered = document.querySelectorAll('#mock-questions-container button:not([disabled])').length === 0;
+            if (allAnswered) showMockResults();
+        }
+
+        function showMockResults() {
+            const panel = document.getElementById('mock-results-panel');
+            const pct = Math.round((mockScore / mockQuestions.length) * 100);
+            panel.classList.remove('hidden');
+            panel.innerHTML = `
+                <span class="text-xs font-bold text-white uppercase tracking-wider block">Mock Exam Complete</span>
+                <p class="text-sm text-amber-300 font-mono font-bold">${mockScore} / ${mockQuestions.length} correct (${pct}%)</p>
+                <p class="text-xs text-gray-400">Check the Revision Dashboard tab for a full per-unit breakdown and your top misconception flags across the syllabus.</p>
+            `;
+        }
+
+        function renderDashboard() {
+            const tableEl = document.getElementById('dashboard-unit-table');
+            tableEl.innerHTML = '';
+            for (let i = 1; i <= 11; i++) {
+                const unitKey = "unit" + i;
+                const stat = globalUnitStats[unitKey];
+                const pct = stat.attempted > 0 ? Math.round((stat.correct / stat.attempted) * 100) : null;
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between bg-[#0d0b17] px-3 py-2 rounded border border-gray-800/80";
+                row.innerHTML = `
+                    <span class="text-gray-300">${unitTitles[unitKey]}</span>
+                    <span class="text-gray-400">${stat.attempted === 0 ? '<span class="text-gray-600 italic">Not attempted yet</span>' : `${stat.correct}/${stat.attempted} correct &bull; <span class="${pct >= 70 ? 'text-emerald-400' : pct >= 40 ? 'text-amber-400' : 'text-rose-400'} font-bold">${pct}%</span>`}</span>
+                `;
+                tableEl.appendChild(row);
+            }
+
+            const miscListEl = document.getElementById('dashboard-misc-list');
+            const miscEntries = Object.entries(globalMiscLog).sort((a, b) => b[1] - a[1]);
+            document.getElementById('dashboard-misc-count').innerText = `${miscEntries.length} Unique Flags`;
+
+            if (miscEntries.length === 0) {
+                miscListEl.innerHTML = `<p class="text-gray-500 italic text-[11px]">No misconceptions logged yet this session. Attempt some exams or the mock to populate this.</p>`;
+            } else {
+                miscListEl.innerHTML = '';
+                miscEntries.forEach(([flag, count]) => {
+                    const item = document.createElement('div');
+                    item.className = "flex items-center justify-between bg-[#0d0b17] px-3 py-2 rounded border border-rose-900/40 text-rose-400 font-mono text-[11px]";
+                    item.innerHTML = `<span>&#9888; ${flag}</span><span class="text-gray-500 text-[10px]">${count}&times; missed</span>`;
+                    miscListEl.appendChild(item);
+                });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            switchUnit('unit1');
+        });
+    </script>
+</body>
+</html>
